@@ -1,0 +1,37 @@
+diff --git a/node_modules/cfonts/lib/GetFont.js b/node_modules/cfonts/lib/GetFont.js
+index 5bfff59..b46e168 100644
+--- a/node_modules/cfonts/lib/GetFont.js
++++ b/node_modules/cfonts/lib/GetFont.js
+@@ -20,6 +20,22 @@ const {
+   Debugging
+ } = require('./Debugging.js');
+ 
++const fonts = {
++  '3d': require('../fonts/3d.json'),
++  'block': require('../fonts/block.json'),
++  'chrome': require('../fonts/chrome.json'),
++  'console': require('../fonts/console.json'),
++  'grid': require('../fonts/grid.json'),
++  'huge': require('../fonts/huge.json'),
++  'pallet': require('../fonts/pallet.json'),
++  'shade': require('../fonts/shade.json'),
++  'simple': require('../fonts/simple.json'),
++  'simple3d': require('../fonts/simple3d.json'),
++  'simpleBlock': require('../fonts/simpleBlock.json'),
++  'slick': require('../fonts/slick.json'),
++  'tiny': require('../fonts/tiny.json'),
++}
++
+ /**
+  * Get a selected JSON font-file object
+  *
+@@ -32,7 +48,8 @@ const GetFont = font => {
+ 
+   // try loading the font file
+   try {
+-    let FONTFACE = require(path.normalize(`../fonts/${font}.json`)); // read font file
++    // let FONTFACE = require(path.normalize(`../fonts/${font}.json`)); // read font file
++    let FONTFACE = fonts[font]; // read font file
+ 
+     Debugging.report(`GetFont: Fontface path selected: "${font}.json"`, 2);
+     return FONTFACE;

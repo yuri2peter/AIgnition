@@ -1,0 +1,10 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "Hello World!",
+  "main": "./server/main.js",
+  "author": "Jane Doe",
+  "dependencies": {
+    "electron": "^28.1.3"
+  }
+}

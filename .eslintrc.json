@@ -1,0 +1,13 @@
+{
+  "extends": "./node_modules/gts/",
+  "plugins": ["react-hooks"],
+  "rules": {
+    "react-hooks/exhaustive-deps": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
+    "node/no-unpublished-import": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  }
+}

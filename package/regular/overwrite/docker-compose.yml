@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  myapp:
+    image: "node:lts-alpine3.18"
+    restart: unless-stopped
+    user: "root"
+    working_dir: /dist
+    environment:
+      - NODE_ENV=production
+      - SERVER_PORT=3000
+    volumes:
+      - ./dist:/dist
+    command: "node ./dist/server/main.js"

@@ -1,0 +1,7 @@
+{
+  "verbose": false,
+  "watch": ["dev", "src/server", "src/common"],
+  "ext": "ts,tsx,js",
+  "exec": "cross-env NODE_ENV=development webpack --config ./dev/webpack.config.server.ts && webpack --config ./dev/webpack.config.preload.ts && cross-env NODE_ENV=development electron ./dist",
+  "delay": 2500
+}

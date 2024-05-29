@@ -1,0 +1,10 @@
+/* For simple use, remove image and font color */
+.root {
+  * {
+    color: inherit;
+    font-size: rem(14px);
+  }
+  img {
+    display: none;
+  }
+}

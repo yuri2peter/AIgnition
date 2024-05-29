@@ -1,0 +1,12 @@
+# project
+/.vscode
+/assets
+/dist
+/node_modules
+/package/regular/release
+/package/docker/test/runtime
+/package/protable/release
+/package/protable/template
+/package/electron/release
+/package/electron/context
+/package/project/release

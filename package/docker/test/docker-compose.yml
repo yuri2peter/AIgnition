@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  booza:
+    image: 'booza:v1'
+    restart: unless-stopped
+    volumes:
+      - ./runtime:/dist/runtime
+    ports:
+      - 3000:3000
