@@ -1,0 +1,7 @@
+.navNodeWrapper {
+  :global {
+    .mantine-Button-section[data-position='right'] {
+      margin-left: auto;
+    }
+  }
+}

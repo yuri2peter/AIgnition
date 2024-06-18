@@ -1,3 +1,4 @@
+import { saveUploads } from '../helpers/upload';
 import { Controller } from '../types/controller';
 import { IpInfoSchema } from 'src/common/type/ipInfo';
 
@@ -6,6 +7,12 @@ const miscs: Controller = (router) => {
     const res = await fetch('https://api.ipapi.is');
     const data = await res.json();
     ctx.body = IpInfoSchema.parse(data);
+  });
+
+  router.post('/api/miscs/upload', async (ctx) => {
+    const field = 'file';
+    const testFile = ctx.request.files?.[field];
+    ctx.body = await saveUploads(testFile);
   });
 };
 export default miscs;

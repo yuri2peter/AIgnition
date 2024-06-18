@@ -1,8 +1,8 @@
 import fs from 'fs-extra';
-import { nanoid } from 'nanoid';
 import path from 'path';
 import { UPLOADS_URL_PREFIX } from 'src/common/config';
 import { runtimeUploadsPath } from 'src/common/paths.app';
+import { shortId } from 'src/common/utils/string';
 import { z } from 'zod';
 
 export async function saveUploads(fileField: unknown) {
@@ -17,7 +17,7 @@ export async function saveUploads(fileField: unknown) {
   const saveFile = async (f: PersistentFile) => {
     const ext = path.extname(f.originalFilename);
     const newFilename =
-      path.basename(f.originalFilename, ext) + '.' + nanoid() + ext;
+      path.basename(f.originalFilename, ext) + '.' + shortId() + ext;
     const newFilepath = path.resolve(runtimeUploadsPath, newFilename);
     await fs.move(f.filepath, newFilepath);
     return {

@@ -2,16 +2,22 @@ import db from 'src/server/data/db';
 import { Controller } from '../types/controller';
 import { SettingsSchema } from 'src/common/type/settings';
 import { z } from 'zod';
+import { cloneDeep } from 'lodash';
 
 const settings: Controller = (router) => {
-  router.post('/api/settings/get', async (ctx) => {
+  router.post('/api/settings/get-all', async (ctx) => {
     ctx.body = db().get().settings;
   });
-  router.post('/api/settings/patch', async (ctx) => {
-    const newSettings = { ...db().get().settings, ...ctx.request.body };
-    db().get().settings = SettingsSchema.parse(newSettings);
+  router.post('/api/settings/get-non-sensitive', async (ctx) => {
+    const settings = cloneDeep(db().get().settings);
+    settings.ai.geminiKey = '';
+    ctx.body = settings;
+  });
+  router.post('/api/settings/set-all', async (ctx) => {
+    const settings = SettingsSchema.parse(ctx.request.body);
+    db().get().settings = settings;
     db().save();
-    ctx.body = { ok: 1 };
+    ctx.body = settings;
   });
   router.post('/api/settings/check-ai-key', async (ctx) => {
     const { key } = z

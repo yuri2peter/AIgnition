@@ -1,0 +1,115 @@
+.w-md-editor {
+  .w-md-editor-area {
+    overflow: auto;
+    border-radius: 0;
+  }
+  .w-md-editor-text {
+    height: 100%;
+    position: relative;
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 0;
+    font-size: 16px !important;
+    line-height: 18px !important;
+    font-variant-ligatures: common-ligatures;
+    .w-md-editor-text-pre,
+    .w-md-editor-text-input,
+    .w-md-editor-text > .w-md-editor-text-pre {
+      margin: 0;
+      border: 0;
+      background: none;
+      box-sizing: inherit;
+      display: inherit;
+      font-family: inherit;
+      font-family: var(--md-editor-font-family) !important;
+      font-size: inherit;
+      font-style: inherit;
+      font-variant-ligatures: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      tab-size: inherit;
+      text-indent: inherit;
+      text-rendering: inherit;
+      text-transform: inherit;
+      white-space: inherit;
+      overflow-wrap: inherit;
+      word-break: inherit;
+      word-break: normal;
+      padding: 0;
+    }
+    .w-md-editor-text-pre {
+      position: relative;
+      margin: 0px !important;
+      pointer-events: none;
+      background-color: transparent !important;
+      > code {
+        padding: 0 !important;
+        font-family: var(--md-editor-font-family) !important;
+        font-size: 16px !important;
+        line-height: 18px !important;
+      }
+    }
+    .w-md-editor-text-input {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      height: 100%;
+      width: 100%;
+      resize: none;
+      color: inherit;
+      overflow: hidden;
+      outline: 0;
+      padding: inherit;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-fill-color: transparent;
+      &:empty {
+        -webkit-text-fill-color: inherit !important;
+      }
+    }
+    .w-md-editor-text-pre,
+    .w-md-editor-text-input {
+      word-wrap: pre;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+  }
+}
+
+.w-md-editor-text-pre {
+  .punctuation {
+    color: var(--color-prettylights-syntax-comment, #8b949e);
+  }
+  .token.url,
+  .token.content {
+    color: var(--color-prettylights-syntax-constant, #0550ae) !important;
+  }
+  .token.title.important {
+    color: var(--color-prettylights-syntax-markup-bold, #24292f);
+  }
+  .token.code-block .function {
+    color: var(--color-prettylights-syntax-entity, #8250df);
+  }
+  .token.bold {
+    font-weight: unset !important;
+  }
+  .token.title {
+    line-height: unset !important;
+    font-size: unset !important;
+    font-weight: unset !important;
+  }
+  .token.code.keyword {
+    color: var(--color-prettylights-syntax-constant, #0550ae) !important;
+  }
+  .token.strike,
+  .token.strike .content {
+    color: var(
+      --color-prettylights-syntax-markup-deleted-text,
+      #82071e
+    ) !important;
+  }
+}

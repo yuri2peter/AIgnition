@@ -1,13 +1,13 @@
-import { nanoid } from 'nanoid';
 import { io } from 'socket.io-client';
 import { USE_SOCKET } from 'src/common/config';
 import { debugLog } from 'src/common/utils/dev';
-import { useGlobalStore } from '../store/useGlobalStore';
+import { useRootStore } from '../store/useRootStore';
+import { shortId } from 'src/common/utils/string';
 
 export default function startSocketClient() {
-  const { setSocketOnline } = useGlobalStore.getState().actions;
+  const { setSocketOnline } = useRootStore.getState().actions;
   const userId = 'guest';
-  const sessionId = nanoid();
+  const sessionId = shortId();
   const socket = io('', {
     autoConnect: USE_SOCKET,
   });

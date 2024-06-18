@@ -25,6 +25,8 @@ export type DataVersionFixer<T, U = unknown> = (
   setData: (recipe: (base: U) => T) => void
 ) => void;
 
+type DataLoadHandle<T> = (data: T) => void;
+
 // 数据记录
 interface Record<T> {
   data: T;
@@ -38,8 +40,8 @@ export default class JsonDb<T> {
   readonly version: number = 0;
   readonly debug: boolean = false;
   private data: T;
-  private autoSaveFile: () => void = () => {};
   private versionFixer: DataVersionFixer<T> = () => {};
+  private onDataLoad: DataLoadHandle<T>;
   save: (immidiate?: boolean) => void = () => {};
 
   constructor(params: {
@@ -47,6 +49,7 @@ export default class JsonDb<T> {
     defaultValue: T; // 默认值
     version?: number; // 版本号
     versionFixer?: DataVersionFixer<T>; // 版本修复器
+    onDataLoad?: DataLoadHandle<T>; // 数据加载后对数据的额外操作（如初始化、完整性检查）
     saveThrottleDelay?: number; // 保存动作的延迟
     backup?: BackupPlan; // 备份计划
     debug?: boolean; // 是否开启调试
@@ -56,6 +59,7 @@ export default class JsonDb<T> {
       defaultValue,
       version = 1,
       versionFixer = () => {},
+      onDataLoad = () => {},
       saveThrottleDelay = 1000,
       backup,
       debug,
@@ -75,6 +79,7 @@ export default class JsonDb<T> {
       }
     };
     this.versionFixer = versionFixer;
+    this.onDataLoad = onDataLoad;
     this.loadFile();
     this.startBackupPlan(backup);
   }
@@ -165,6 +170,7 @@ export default class JsonDb<T> {
     this.versionFixer(record, (recipe) => {
       this.set(recipe(this.data));
     });
+    this.onDataLoad(this.data);
   }
 
   exportRecord(): Record<unknown> {

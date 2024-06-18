@@ -43,7 +43,7 @@ export const USE_CHII = false;
 export const USE_WEB_SERVER = true;
 
 // 启用socket（需要启动web server）
-export const USE_SOCKET = true && USE_WEB_SERVER;
+export const USE_SOCKET = false && USE_WEB_SERVER;
 
 // 启用electron
 export const USE_ELECTRON = false;
@@ -54,7 +54,7 @@ export const OPEN_BROWSER_AFTER_WEB_SERVER_START =
 
 // 前端web开发时是否自动打开浏览器
 export const OPEN_BROWSER_AFTER_WEB_DEV_START =
-  true && IS_DEV && IS_WIN && !USE_ELECTRON;
+  false && IS_DEV && IS_WIN && !USE_ELECTRON;
 
 // 前端web开发时是否自动打开CHII
 export const OPEN_CHII_AFTER_WEB_DEV_START =

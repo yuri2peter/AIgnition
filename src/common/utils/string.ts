@@ -1,4 +1,5 @@
 import md5 from 'md5';
+import { nanoid } from 'nanoid';
 
 // 检查字符串是否是以某些字符开头,支持传入除外列表
 // 如 startsWith('abc', ['a']) === true
@@ -65,4 +66,8 @@ export function autoRenameWithIndex(newName: string, localNames: string[]) {
   });
   const index1 = maxIndex + 1;
   return index1 > 1 ? `${pureName1}(${index1 - 1})` : pureName1;
+}
+
+export function shortId() {
+  return nanoid(6);
 }

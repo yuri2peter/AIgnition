@@ -7,6 +7,7 @@ import {
   commonAssetsPath,
   rendererAssetsPath,
   srcPath,
+  rootPath,
 } from '../src/common/paths.project';
 import TsconfigPathsPlugins from 'tsconfig-paths-webpack-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
@@ -144,7 +145,11 @@ const config: Configuration = {
     // @ts-ignore
     new LodashModuleReplacementPlugin(),
     IS_DEV ? false : new CleanWebpackPlugin(),
-    !IS_DEV ? false : new ReactRefreshWebpackPlugin(),
+    !IS_DEV
+      ? false
+      : new ReactRefreshWebpackPlugin({
+          overlay: false,
+        }),
   ],
   devtool: IS_DEV ? 'inline-source-map' : false,
   resolve: {
@@ -152,6 +157,10 @@ const config: Configuration = {
     modules: [srcPath, 'node_modules'],
     // There is no need to add aliases here, the paths in tsconfig get mirrored
     plugins: [new TsconfigPathsPlugins()],
+    alias: {
+      '@codemirror/state':
+        rootPath + '/node_modules/@codemirror/state/dist/index.cjs',
+    },
   },
   optimization: {
     runtimeChunk: 'single',
@@ -194,7 +203,13 @@ const config: Configuration = {
       },
     ],
     historyApiFallback: true,
-    client: { progress: true },
+    client: {
+      overlay: {
+        errors: false,
+        warnings: false,
+        runtimeErrors: false,
+      },
+    },
     proxy: proxyConfigParser({
       // API请求代理
       '/api': [

@@ -3,9 +3,14 @@ import puppeteer from 'puppeteer';
 import { generateContentWithImage } from './ai';
 import { sleep } from 'src/common/utils/time';
 import { runtimeUploadsPath } from 'src/common/paths.app';
-import { nanoid } from 'nanoid';
 import { UPLOADS_URL_PREFIX } from 'src/common/config';
-import db from 'src/server/data/db';
+import { shortId } from 'src/common/utils/string';
+// import db from 'src/server/data/db';
+
+export const defaultbBookmarkAnalysisTaskPrompt =
+  'Summarize this webpage in two sentence based on the following information and screenshots.';
+export const defaultbBookmarkAnalysisTaskPromptZh =
+  '使用如下信息和网页截图来生成这个网页的摘要（不超过两句话）。';
 
 // parse url into title, description, icon, content
 export async function urlParser2(url: string) {
@@ -55,7 +60,7 @@ export async function urlParser2(url: string) {
   });
 
   // screenshot
-  const screenshotFileName = `${nanoid()}.png`;
+  const screenshotFileName = `${shortId()}.png`;
   const screenshotPath = path.resolve(runtimeUploadsPath, screenshotFileName);
   await page.screenshot({
     path: screenshotPath,
@@ -68,7 +73,7 @@ export async function urlParser2(url: string) {
     });
   await browser.close();
   const prompt = [
-    db().get().settings.bookmarkAnalysisTaskPrompt,
+    defaultbBookmarkAnalysisTaskPrompt,
     JSON.stringify(
       {
         title,

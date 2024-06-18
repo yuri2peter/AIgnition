@@ -1,4 +1,4 @@
-@tailwind base;
+/* @tailwind base; */
 @tailwind components;
 @tailwind utilities;
 
@@ -15,5 +15,26 @@ body {
     display: inline-block;
     flex-shrink: 0;
     vertical-align: sub;
+  }
+}
+
+::-webkit-scrollbar {
+  @apply w-1 h-1 bg-neutral-500/20;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-500/50 rounded-full;
+}
+
+.mantine-contextmenu {
+  padding: rem(4px);
+
+  .mantine-contextmenu-item-button {
+    padding: rem(6.66px) rem(12px);
+  }
+
+  .mantine-contextmenu-divider {
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 }

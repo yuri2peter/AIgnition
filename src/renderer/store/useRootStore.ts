@@ -10,8 +10,7 @@ const defaultStore: Store = {
   socketOnline: false,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useGlobalStore = createZustandStore(defaultStore, (set, get) => {
+export const useRootStore = createZustandStore(defaultStore, (set) => {
   const setAppReady = (appReady: boolean) => {
     set({
       appReady,

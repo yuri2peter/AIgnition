@@ -1,6 +1,7 @@
 import React from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import clsx from 'clsx';
 import theme1 from './theme1.module.css';
 
 const themeClasses: Record<string, string> = {
@@ -12,7 +13,17 @@ const MarkdownRender: React.FC<{ text: string; theme?: string }> = ({
   theme = 'theme1',
 }) => {
   return (
-    <Markdown remarkPlugins={[remarkGfm]} className={themeClasses[theme]}>
+    <Markdown
+      components={{
+        a: ({ href, children }) => (
+          <a href={href} target="_blank" rel="noopener noreferrer">
+            {children}
+          </a>
+        ),
+      }}
+      remarkPlugins={[remarkGfm]}
+      className={clsx(themeClasses[theme], 'prose')}
+    >
       {text}
     </Markdown>
   );

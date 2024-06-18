@@ -34,13 +34,13 @@ export function zodSafeNumber(defaultValue = 0) {
 
 export function zodSafeArray<T extends ZodTypeAny>(
   schema: T,
-  defaultValue = []
+  getDefaultValue = () => [] as T['_output'][]
 ) {
   return z
     .array(schema)
     .nullable()
     .optional()
-    .transform((t) => t || defaultValue);
+    .transform((t) => t ?? getDefaultValue());
 }
 
 export function zodSafeType<T extends ZodTypeAny>(
@@ -52,4 +52,8 @@ export function zodSafeType<T extends ZodTypeAny>(
     .nullable()
     .optional()
     .transform((t) => t || defaultValueFixed);
+}
+
+export function getParsedId(obj: unknown) {
+  return z.object({ id: z.string().min(1) }).parse(obj).id;
 }

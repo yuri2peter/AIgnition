@@ -15,6 +15,7 @@ import {
 } from 'src/common/config';
 import { runtimeUploadsPath, rendererPath } from 'src/common/paths.app';
 import handleRoutes from './routes';
+import { MyRouter } from './types/controller';
 
 export default function startKoa() {
   const app = new Koa();
@@ -65,5 +66,5 @@ function useUpload(app: Koa) {
 function useRoutes(app: Koa) {
   const router = new Router();
   app.use(router.routes());
-  handleRoutes(router);
+  handleRoutes(router as unknown as MyRouter);
 }
