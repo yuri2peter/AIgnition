@@ -16,7 +16,46 @@ export function getCurrentTimeSeconds() {
 
 export function formatTime(
   date?: string | number | Date | dayjs.Dayjs | null | undefined,
-  format = 'YYYY-MM-DD HH:mm'
+  format = 'MM/DD/YYYY, HH:mm'
 ) {
   return dayjs(date).format(format);
+}
+
+/**
+ * 等待，直到checker返回true
+ * @param checker 检查函数
+ * @param interval 检查间隔
+ * @param timeout 超时则报错，默认0表示不启用
+ * @returns
+ */
+export async function waitUntil(
+  checker: (() => boolean) | (() => Promise<boolean>),
+  interval = 100,
+  timeout = 0
+): Promise<void> {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    const checked = await checker();
+    if (checked) {
+      resolve();
+      return;
+    }
+    let passed = false;
+    const itv = setInterval(async () => {
+      const checked = await checker();
+      if (checked) {
+        clearInterval(itv);
+        passed = true;
+        resolve();
+      }
+    }, interval);
+    if (timeout) {
+      setTimeout(() => {
+        if (!passed) {
+          clearInterval(itv);
+          reject(new Error('Wait timeout.'));
+        }
+      }, timeout);
+    }
+  });
 }

@@ -5,14 +5,11 @@ import { svgIconProps } from './defines';
 import { IconItalic } from '@tabler/icons-react';
 
 export const italic: ICommand = {
-  name: 'italic',
+  name: 'Italic',
   keyCommand: 'italic',
   shortcuts: 'ctrlcmd+i',
   prefix: '*',
-  buttonProps: {
-    'aria-label': 'Add italic text (ctrl + i)',
-    title: 'Add italic text (ctrl + i)',
-  },
+  title: 'Add italic text (Ctrl + I)',
   icon: <IconItalic data-name="italic" {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     const newSelectionRange = selectWord({

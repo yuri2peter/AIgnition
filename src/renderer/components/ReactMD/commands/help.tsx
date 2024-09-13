@@ -3,10 +3,10 @@ import { ICommand } from '.';
 import { svgIconProps } from './defines';
 
 export const help: ICommand = {
-  name: 'help',
+  name: 'Help',
   keyCommand: 'help',
-  buttonProps: { 'aria-label': 'Open help', title: 'Open help' },
   icon: <IconHelp {...svgIconProps} />,
+  title: 'Open help',
   execute: () => {
     window.open(
       'https://www.markdownguide.org/basic-syntax/',

@@ -15,6 +15,9 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import 'mantine-contextmenu/styles.css';
+import 'react-complex-tree/lib/style-modern.css';
+import './styles/main.css';
+import './styles/prism-highlight.css';
 import React from 'react';
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
@@ -27,7 +30,23 @@ import AppRoutes from './routes';
 import enableChii from './helpers/enableChii';
 import { IS_DEV, USE_CHII } from 'src/common/config';
 import ThemeProvider from './ThemeProvider';
-import SettingsModal from './components/modals/SettingsModal';
+import ChangePageIdModal from './components/modals/ChangePageIdModal';
+import { ImportFromJotwayModal } from './pages/page-view/C2/panels/Data/ImportFromJotway';
+import { ImportFromBrowserFavoritesModal } from './pages/page-view/C2/panels/Data/ImportFromBrowserFavorites';
+import { ImportFromArchiveModal } from './pages/page-view/C2/panels/Data/ImportFromArchive';
+
+declare module '@mantine/modals' {
+  // @ts-ignore
+  export interface MantineModalsOverride {
+    modals: typeof modals;
+  }
+}
+const modals = {
+  ChangePageIdModal,
+  ImportFromJotwayModal,
+  ImportFromBrowserFavoritesModal,
+  ImportFromArchiveModal,
+};
 
 IS_DEV && USE_CHII && enableChii();
 
@@ -37,7 +56,7 @@ export default function App() {
       <MantineProvider forceColorScheme={'light'}>
         <ThemeProvider>
           <ContextMenuProvider>
-            <ModalsProvider modals={{ SettingsModal }}>
+            <ModalsProvider modals={modals}>
               <NavigationProgress />
               <Notifications position="top-center" />
               <AppRoutes />

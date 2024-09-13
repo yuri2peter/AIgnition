@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "noImplicitReturns": true,
     "noImplicitAny": true,
+    "noUncheckedIndexedAccess": true,
     "module": "CommonJS",
     "moduleResolution": "node",
     "target": "ES5",

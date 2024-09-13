@@ -1,6 +1,11 @@
-const storage: {
+export type Storage = {
   [key: string]: any;
-} = {};
+};
+
+export interface CachePersistDriver {
+  load(): Storage;
+  onStorageChange(storage: Storage): void;
+}
 
 export default class MemCache {
   static EXPIRE_TIME = {
@@ -9,9 +14,20 @@ export default class MemCache {
     ONE_WEEK: 604800,
     ONE_MONTH: 2592000,
   };
-  namespace: string;
-  constructor(namespace = '') {
-    this.namespace = namespace.replace(/\//g, '-');
+  storage: {
+    [key: string]: any;
+  } = {};
+  cachePersistDriver: CachePersistDriver = {
+    load() {
+      return {};
+    },
+    onStorageChange() {},
+  };
+  constructor(cachePersistDriver?: CachePersistDriver) {
+    if (cachePersistDriver) {
+      this.cachePersistDriver = cachePersistDriver;
+      this.storage = this.cachePersistDriver.load();
+    }
   }
   /**
    * 设置一个缓存
@@ -27,7 +43,8 @@ export default class MemCache {
       expire,
       createAt: Date.now(),
     };
-    storage[path] = data;
+    this.storage[path] = data;
+    this.cachePersistDriver.onStorageChange(this.storage);
   }
 
   /**
@@ -37,7 +54,7 @@ export default class MemCache {
    * */
   has(key: any) {
     const path = this._getPath(key);
-    const data = storage[path];
+    const data = this.storage[path];
     if (data === undefined) return false;
     try {
       if (
@@ -62,7 +79,7 @@ export default class MemCache {
    * */
   get(key: string, defaultValue = undefined) {
     const path = this._getPath(key);
-    const data = storage[path];
+    const data = this.storage[path];
     if (data === undefined) return defaultValue;
     try {
       if (
@@ -97,9 +114,16 @@ export default class MemCache {
    * */
   remove(key: string) {
     const path = this._getPath(key);
-    delete storage[path];
+    delete this.storage[path];
+    this.cachePersistDriver.onStorageChange(this.storage);
   }
+
+  removeAll() {
+    this.storage = {};
+    this.cachePersistDriver.onStorageChange(this.storage);
+  }
+
   _getPath(key: string) {
-    return `/${this.namespace}/${key}`;
+    return key;
   }
 }

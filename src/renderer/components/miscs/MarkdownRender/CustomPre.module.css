@@ -1,0 +1,21 @@
+.root {
+  background-color: var(--tw-prose-pre-bg);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  padding-top: 0.8571429em;
+  padding-inline-end: 1.1428571em;
+  padding-bottom: 0.8571429em;
+  padding-inline-start: 1.1428571em;
+
+  .circle {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+  }
+
+  pre {
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+  }
+}

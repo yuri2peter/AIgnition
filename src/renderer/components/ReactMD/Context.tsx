@@ -1,14 +1,14 @@
 import React from 'react';
-import { ICommand, TextAreaCommandOrchestrator } from './commands';
-import { MDEditorProps } from './Types';
+import { ICommand, TextAreaCommandOrchestrator, TextRange } from './commands';
+import { HistoryManager } from './utils/HistoryManager';
 
 export type PreviewType = 'live' | 'edit' | 'preview';
 
 export interface ContextStore {
-  components?: MDEditorProps['components'];
   commands?: ICommand<string>[];
   extraCommands?: ICommand<string>[];
   markdown?: string;
+  markdownLazy?: string;
   preview?: PreviewType;
   height?: React.CSSProperties['height'];
   fullscreen?: boolean;
@@ -20,10 +20,13 @@ export interface ContextStore {
   container?: HTMLDivElement | null;
   dispatch?: React.Dispatch<ContextStore>;
   barPopup?: Record<string, boolean>;
-  scrollTop?: number;
-  scrollTopPreview?: number;
   tabSize?: number;
   defaultTabEnable?: boolean;
+  historyManager?: HistoryManager<{
+    markdown: string;
+    selection: TextRange;
+  }>;
+  textSelection?: TextRange;
   [key: string]: any;
 }
 

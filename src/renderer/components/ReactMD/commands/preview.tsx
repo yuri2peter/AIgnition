@@ -4,14 +4,11 @@ import { ContextStore, ExecuteCommandState } from '../Context';
 import { svgIconProps } from './defines';
 
 export const codePreview: ICommand = {
-  name: 'preview',
+  name: 'Preview',
   keyCommand: 'preview',
   value: 'preview',
-  shortcuts: 'ctrlcmd+9',
-  buttonProps: {
-    'aria-label': 'Preview code (ctrl + 9)',
-    title: 'Preview code (ctrl + 9)',
-  },
+  shortcuts: 'alt+9',
+  title: 'Preview mode (Alt + 9)',
   icon: (
     <svg
       {...svgIconProps}
@@ -19,8 +16,8 @@ export const codePreview: ICommand = {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className="tabler-icon"
     >
       <path d="M4 4h2v16h-2" />
@@ -30,26 +27,23 @@ export const codePreview: ICommand = {
   execute: (
     state: TextState,
     api: TextAreaTextApi,
-    dispatch?: React.Dispatch<ContextStore>,
+    ctx?: ContextStore,
     executeCommandState?: ExecuteCommandState,
     shortcuts?: string[]
   ) => {
     api.textArea.focus();
-    if (shortcuts && dispatch && executeCommandState) {
-      dispatch({ preview: 'preview' });
+    if (shortcuts && ctx?.dispatch && executeCommandState) {
+      ctx?.dispatch({ preview: 'preview' });
     }
   },
 };
 
 export const codeEdit: ICommand = {
-  name: 'edit',
+  name: 'Edit',
   keyCommand: 'preview',
   value: 'edit',
-  shortcuts: 'ctrlcmd+7',
-  buttonProps: {
-    'aria-label': 'Edit code (ctrl + 7)',
-    title: 'Edit code (ctrl + 7)',
-  },
+  shortcuts: 'alt+7',
+  title: 'Edit mode (Alt + 7)',
   icon: (
     <svg
       {...svgIconProps}
@@ -57,8 +51,8 @@ export const codeEdit: ICommand = {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className="tabler-icon"
     >
       <path d="M4 4h10v16h-10" />
@@ -68,26 +62,23 @@ export const codeEdit: ICommand = {
   execute: (
     state: TextState,
     api: TextAreaTextApi,
-    dispatch?: React.Dispatch<ContextStore>,
+    ctx?: ContextStore,
     executeCommandState?: ExecuteCommandState,
     shortcuts?: string[]
   ) => {
     api.textArea.focus();
-    if (shortcuts && dispatch && executeCommandState) {
-      dispatch({ preview: 'edit' });
+    if (shortcuts && ctx?.dispatch && executeCommandState) {
+      ctx?.dispatch({ preview: 'edit' });
     }
   },
 };
 
 export const codeLive: ICommand = {
-  name: 'live',
+  name: 'Live',
   keyCommand: 'preview',
   value: 'live',
-  shortcuts: 'ctrlcmd+8',
-  buttonProps: {
-    'aria-label': 'Live code (ctrl + 8)',
-    title: 'Live code (ctrl + 8)',
-  },
+  shortcuts: 'alt+8',
+  title: 'Live mode (Alt + 8)',
   icon: (
     <svg
       {...svgIconProps}
@@ -95,8 +86,8 @@ export const codeLive: ICommand = {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className="tabler-icon"
     >
       <path d="M4 4h6v16h-6" />
@@ -106,13 +97,13 @@ export const codeLive: ICommand = {
   execute: (
     state: TextState,
     api: TextAreaTextApi,
-    dispatch?: React.Dispatch<ContextStore>,
+    ctx?: ContextStore,
     executeCommandState?: ExecuteCommandState,
     shortcuts?: string[]
   ) => {
     api.textArea.focus();
-    if (shortcuts && dispatch && executeCommandState) {
-      dispatch({ preview: 'live' });
+    if (shortcuts && ctx?.dispatch && executeCommandState) {
+      ctx?.dispatch({ preview: 'live' });
     }
   },
 };

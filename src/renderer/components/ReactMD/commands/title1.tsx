@@ -1,18 +1,14 @@
-import React from 'react';
 import { titleExecute } from './title';
 import { ICommand, ExecuteState, TextAreaTextApi } from '.';
 
 export const title1: ICommand = {
-  name: 'title1',
+  name: 'Title1',
   keyCommand: 'title1',
   shortcuts: 'ctrlcmd+1',
   prefix: '# ',
   suffix: '',
-  buttonProps: {
-    'aria-label': 'Insert title1 (ctrl + 1)',
-    title: 'Insert title1 (ctrl + 1)',
-  },
-  icon: <div style={{ fontSize: 18, textAlign: 'left' }}>Title 1</div>,
+  title: 'Insert title1 (Ctrl + 1)',
+  icon: <span>#</span>,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     titleExecute({
       state,

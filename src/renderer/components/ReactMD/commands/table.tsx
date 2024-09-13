@@ -1,11 +1,10 @@
-import React from 'react';
 import { ICommand, ExecuteState, TextAreaTextApi } from '.';
 import { selectWord, executeCommand } from '../utils/markdownUtils';
 import { svgIconProps } from './defines';
 import { IconTable } from '@tabler/icons-react';
 
 export const table: ICommand = {
-  name: 'table',
+  name: 'Table',
   keyCommand: 'table',
   prefix: `
 | Header | Header | Header | Header |
@@ -16,8 +15,8 @@ export const table: ICommand = {
 
 `,
   suffix: '',
-  buttonProps: { 'aria-label': 'Add table', title: 'Add table' },
   icon: <IconTable {...svgIconProps} />,
+  title: 'Add table',
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     const newSelectionRange = selectWord({
       text: state.text,

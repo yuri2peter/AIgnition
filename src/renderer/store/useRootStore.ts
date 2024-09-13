@@ -2,10 +2,12 @@ import { createZustandStore } from 'src/common/libs/createZustand';
 
 interface Store {
   appReady: boolean;
+  serverError: boolean;
   socketOnline: boolean;
 }
 
 const defaultStore: Store = {
+  serverError: false,
   appReady: false,
   socketOnline: false,
 };
@@ -21,7 +23,12 @@ export const useRootStore = createZustandStore(defaultStore, (set) => {
       socketOnline,
     });
   };
+  const setServerError = (serverError: boolean) => {
+    set({
+      serverError,
+    });
+  };
   return {
-    actions: { setAppReady, setSocketOnline },
+    actions: { setAppReady, setSocketOnline, setServerError },
   };
 });

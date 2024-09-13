@@ -5,15 +5,12 @@ import { svgIconProps } from './defines';
 import { IconMessage } from '@tabler/icons-react';
 
 export const comment: ICommand = {
-  name: 'comment',
+  name: 'Comment',
   keyCommand: 'comment',
   shortcuts: 'ctrlcmd+/',
   prefix: '<!-- ',
   suffix: ' -->',
-  buttonProps: {
-    'aria-label': 'Insert comment (ctrl + /)',
-    title: 'Insert comment (ctrl + /)',
-  },
+  title: 'Insert comment (Ctrl + /)',
   icon: <IconMessage {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     const newSelectionRange = selectWord({

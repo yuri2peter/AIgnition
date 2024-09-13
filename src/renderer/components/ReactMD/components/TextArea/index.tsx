@@ -1,32 +1,11 @@
 import React, { useEffect, Fragment, useContext } from 'react';
-import {
-  EditorContext,
-  ContextStore,
-  ExecuteCommandState,
-} from '../../Context';
-import shortcuts from './shortcuts';
+import { EditorContext, ContextStore } from '../../Context';
 import Markdown from './Markdown';
-import Textarea, { TextAreaProps } from './Textarea';
+import Textarea from './Textarea';
 import { IProps } from '../../Types';
-import { TextAreaCommandOrchestrator, ICommand } from '../../commands';
+import { TextAreaCommandOrchestrator } from '../../commands';
 import './index.css';
-
-type RenderTextareaHandle = {
-  dispatch: ContextStore['dispatch'];
-  onChange?: TextAreaProps['onChange'];
-  useContext?: {
-    commands: ContextStore['commands'];
-    extraCommands: ContextStore['extraCommands'];
-    commandOrchestrator?: TextAreaCommandOrchestrator;
-  };
-  shortcuts?: (
-    e: KeyboardEvent | React.KeyboardEvent<HTMLTextAreaElement>,
-    commands: ICommand[],
-    commandOrchestrator?: TextAreaCommandOrchestrator,
-    dispatch?: React.Dispatch<ContextStore>,
-    state?: ExecuteCommandState
-  ) => void;
-};
+import SelectionDisplay from './SelectionDisplay';
 
 export interface ITextAreaProps
   extends Omit<
@@ -36,12 +15,6 @@ export interface ITextAreaProps
     IProps {
   value?: string;
   onScroll?: (e: React.UIEvent<HTMLDivElement>) => void;
-  renderTextarea?: (
-    props:
-      | React.TextareaHTMLAttributes<HTMLTextAreaElement>
-      | React.HTMLAttributes<HTMLDivElement>,
-    opts: RenderTextareaHandle
-  ) => JSX.Element;
 }
 
 export type TextAreaRef = {
@@ -50,10 +23,8 @@ export type TextAreaRef = {
 };
 
 export default function TextArea(props: ITextAreaProps) {
-  const { prefixCls, className, onScroll, renderTextarea, ...otherProps } =
-    props || {};
-  const { markdown, scrollTop, commands, minHeight, extraCommands, dispatch } =
-    useContext(EditorContext);
+  const { prefixCls, className, onScroll, ...otherProps } = props || {};
+  const { dispatch, textarea, textSelection } = useContext(EditorContext);
   const textRef = React.useRef<HTMLTextAreaElement>(null);
   const executeRef = React.useRef<TextAreaCommandOrchestrator>();
   const warp = React.createRef<HTMLDivElement>();
@@ -61,7 +32,6 @@ export default function TextArea(props: ITextAreaProps) {
     const state: ContextStore = {};
     if (warp.current) {
       state.textareaWarp = warp.current || undefined;
-      warp.current.scrollTop = scrollTop || 0;
     }
     if (dispatch) {
       dispatch({ ...state });
@@ -85,45 +55,25 @@ export default function TextArea(props: ITextAreaProps) {
       ref={warp}
       className={`${prefixCls}-area ${className || ''}`}
       onScroll={onScroll}
+      onClick={() => {
+        if (textarea) {
+          const focused = textarea === document.activeElement;
+          if (!focused) {
+            textarea.focus();
+            textarea.setSelectionRange(
+              textSelection?.start ?? 0,
+              textSelection?.end ?? 0
+            );
+          }
+        }
+      }}
     >
-      <div className={`${prefixCls}-text`} style={{ minHeight }}>
-        {renderTextarea ? (
-          React.cloneElement(
-            renderTextarea(
-              {
-                ...otherProps,
-                value: markdown,
-                autoComplete: 'off',
-                autoCorrect: 'off',
-                spellCheck: 'false',
-                autoCapitalize: 'off',
-                className: `${prefixCls}-text-input`,
-                style: {
-                  WebkitTextFillColor: 'inherit',
-                  overflow: 'auto',
-                },
-              },
-              {
-                dispatch,
-                onChange: otherProps.onChange,
-                shortcuts,
-                useContext: {
-                  commands,
-                  extraCommands,
-                  commandOrchestrator: executeRef.current,
-                },
-              }
-            ),
-            {
-              ref: textRef,
-            }
-          )
-        ) : (
-          <Fragment>
-            <Markdown prefixCls={prefixCls} />
-            <Textarea prefixCls={prefixCls} {...otherProps} />
-          </Fragment>
-        )}
+      <div className={`${prefixCls}-text`} style={{ minHeight: '100%' }}>
+        <Fragment>
+          <Markdown prefixCls={prefixCls} />
+          <SelectionDisplay prefixCls={prefixCls} />
+          <Textarea prefixCls={prefixCls} {...otherProps} />
+        </Fragment>
       </div>
     </div>
   );

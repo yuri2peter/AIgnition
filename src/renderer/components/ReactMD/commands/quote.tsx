@@ -5,15 +5,12 @@ import { svgIconProps } from './defines';
 import { IconQuote } from '@tabler/icons-react';
 
 export const quote: ICommand = {
-  name: 'quote',
+  name: 'Quote',
   keyCommand: 'quote',
   shortcuts: 'ctrlcmd+q',
   prefix: '> ',
   suffix: '',
-  buttonProps: {
-    'aria-label': 'Insert a quote (ctrl + q)',
-    title: 'Insert a quote (ctrl + q)',
-  },
+  title: 'Insert a quote (Ctrl + Q)',
   icon: <IconQuote {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     const newSelectionRange = selectLine({

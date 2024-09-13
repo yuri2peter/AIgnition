@@ -253,7 +253,7 @@ function proxyConfigParser(configs: {
     [key: string]: ProxyConfig;
   } = {};
   Object.keys(configs).forEach((key) => {
-    const config = configs[key];
+    const config = configs[key]!;
     if (Array.isArray(config)) {
       if (config[1]) {
         parsed[key] = config[0];

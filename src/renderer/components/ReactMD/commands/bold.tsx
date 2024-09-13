@@ -5,14 +5,11 @@ import { svgIconProps } from './defines';
 import { IconBold } from '@tabler/icons-react';
 
 export const bold: ICommand = {
-  name: 'bold',
+  name: 'Bold',
   keyCommand: 'bold',
   shortcuts: 'ctrlcmd+b',
   prefix: '**',
-  buttonProps: {
-    'aria-label': 'Add bold text (ctrl + b)',
-    title: 'Add bold text (ctrl + b)',
-  },
+  title: 'Add bold text (Ctrl + B)',
   icon: <IconBold {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     const newSelectionRange = selectWord({

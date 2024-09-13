@@ -5,15 +5,12 @@ import { selectWord, executeCommand } from '../utils/markdownUtils';
 import { IconSeparator } from '@tabler/icons-react';
 
 export const hr: ICommand = {
-  name: 'hr',
+  name: 'Hr',
   keyCommand: 'hr',
   shortcuts: 'ctrlcmd+h',
   prefix: '\n\n---\n',
   suffix: '',
-  buttonProps: {
-    'aria-label': 'Insert HR (ctrl + h)',
-    title: 'Insert HR (ctrl + h)',
-  },
+  title: 'Insert HR (Ctrl + H)',
   icon: <IconSeparator {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     const newSelectionRange = selectWord({

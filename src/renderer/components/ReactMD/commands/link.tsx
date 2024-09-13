@@ -5,15 +5,12 @@ import { svgIconProps } from './defines';
 import { IconLink } from '@tabler/icons-react';
 
 export const link: ICommand = {
-  name: 'link',
+  name: 'Link',
   keyCommand: 'link',
   shortcuts: 'ctrlcmd+l',
   prefix: '[',
   suffix: '](url)',
-  buttonProps: {
-    'aria-label': 'Add a link (ctrl + l)',
-    title: 'Add a link (ctrl + l)',
-  },
+  title: 'Add a link (Ctrl + L)',
   icon: <IconLink data-name="link" {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     let newSelectionRange = selectWord({

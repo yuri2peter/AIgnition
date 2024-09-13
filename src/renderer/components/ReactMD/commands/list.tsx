@@ -72,14 +72,11 @@ export const makeList = (
 };
 
 export const unorderedListCommand: ICommand = {
-  name: 'unordered-list',
+  name: 'Unordered List',
   keyCommand: 'list',
-  shortcuts: 'ctrl+shift+u',
+  shortcuts: 'ctrlcmd+shift+u',
   prefix: '- ',
-  buttonProps: {
-    'aria-label': 'Add unordered list (ctrl + shift + u)',
-    title: 'Add unordered list (ctrl + shift + u)',
-  },
+  title: 'Add unordered list (Ctrl + Shift + U)',
   icon: <IconList data-name="unordered-list" {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     makeList(state, api, '- ');
@@ -87,14 +84,11 @@ export const unorderedListCommand: ICommand = {
 };
 
 export const orderedListCommand: ICommand = {
-  name: 'ordered-list',
+  name: 'Ordered List',
   keyCommand: 'list',
-  shortcuts: 'ctrl+shift+o',
+  shortcuts: 'ctrlcmd+shift+o',
   prefix: '1. ',
-  buttonProps: {
-    'aria-label': 'Add ordered list (ctrl + shift + o)',
-    title: 'Add ordered list (ctrl + shift + o)',
-  },
+  title: 'Add ordered list (Ctrl + Shift + O)',
   icon: <IconListNumbers data-name="ordered-list" {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     makeList(state, api, (item, index) => `${index + 1}. `);
@@ -102,16 +96,13 @@ export const orderedListCommand: ICommand = {
 };
 
 export const checkedListCommand: ICommand = {
-  name: 'checked-list',
+  name: 'Checked List',
   keyCommand: 'list',
-  shortcuts: 'ctrl+shift+c',
+  shortcuts: 'ctrlcmd+shift+c',
   prefix: '- [ ] ',
-  buttonProps: {
-    'aria-label': 'Add checked list (ctrl + shift + c)',
-    title: 'Add checked list (ctrl + shift + c)',
-  },
+  title: 'Add checked list (Ctrl + Shift + C)',
   icon: <IconListCheck data-name="checked-list" {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
-    makeList(state, api, (item, index) => `- [ ] `);
+    makeList(state, api, () => '- [ ] ');
   },
 };

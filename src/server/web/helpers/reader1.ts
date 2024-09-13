@@ -13,30 +13,43 @@ export async function snapshotReader(url: string) {
 }
 
 export async function metaReader(url: string) {
-  const html = await htmlReader(url);
-  const $ = load(html);
-  const title = $('title').text() || 'No Title';
-  const description =
-    $('meta[name="description" i]').attr('content') || 'No description.';
-  const IconWorldWww =
-    $('link[rel="icon" i], link[rel="shortcut icon" i]').attr('href') || '';
-  return z
-    .object({
-      description: z.string(),
-      title: z.string(),
-      IconWorldWww: z.string(),
-    })
-    .parse({
-      title,
-      description,
-      IconWorldWww,
-    });
+  try {
+    const { origin } = new URL(url);
+    const html = await htmlReader(url);
+    const $ = load(html);
+    const title = $('title').text() || 'No Title';
+    const description =
+      $('meta[name="description" i]').attr('content') || 'No description.';
+    const iconAttr =
+      $('link[rel="icon" i], link[rel="shortcut icon" i]').attr('href') || '';
+    return z
+      .object({
+        description: z.string(),
+        title: z.string(),
+        icon: z.string(),
+      })
+      .parse({
+        title,
+        description,
+        icon: iconAttr
+          ? iconAttr.startsWith('http')
+            ? iconAttr
+            : new URL(iconAttr, origin).href
+          : '',
+      });
+  } catch (error) {
+    return {
+      title: '',
+      description: '',
+      icon: '',
+    };
+  }
 }
 
 async function htmlReader(url: string) {
   try {
     const { data: html } = await axios.get(url, {
-      timeout: 20000,
+      timeout: 20 * 1000,
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -47,8 +60,7 @@ async function htmlReader(url: string) {
     });
     return html as string;
   } catch (error) {
-    const u = new URL(url);
-    return `<title>${u.hostname}</title>`;
+    return '';
   }
 }
 

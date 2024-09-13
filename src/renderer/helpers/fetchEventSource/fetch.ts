@@ -32,12 +32,7 @@ export interface FetchEventSourceInit extends RequestInit {
 
   /**
    * Called when there is any error making the request / processing messages /
-   * handling callbacks etc. Use this to control the retry strategy: if the
-   * error is fatal, rethrow the error inside the callback to stop the entire
-   * operation. Otherwise, you can return an interval (in milliseconds) after
-   * which the request will automatically retry (with the last-event-id).
-   * If this callback is not specified, or it returns undefined, fetchEventSource
-   * will treat every error as retriable and will try again after 1 second.
+   * handling callbacks etc. This error handle will not catch any errors thrown.
    */
   onerror?: (err: any) => number | null | undefined | void;
 
@@ -58,7 +53,7 @@ export function fetchEventSource(
     ...rest
   }: FetchEventSourceInit
 ) {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     // make a copy of the input headers since we may modify it below:
     const headers = { ...inputHeaders };
     if (!headers.accept) {
@@ -116,6 +111,7 @@ export function fetchEventSource(
         resolve();
       } catch (err) {
         onerror?.(err);
+        reject(err);
       }
     }
 

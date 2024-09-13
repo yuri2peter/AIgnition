@@ -5,8 +5,11 @@
   position: relative;
   color: var(--color-fg-default);
   --md-editor-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --md-editor-background-color: var(--color-canvas-default, #ffffff);
-  --md-editor-box-shadow-color: var(--color-border-default, #d0d7de);
+  --md-editor-background-color: white;
+  --md-editor-textarea-padding: 24px;
+  /* --md-editor-background-color: transparent; */
+  --md-editor-box-shadow-color: #d0d7de;
+  --md-editor-border-color: var(--divider-color, #dee2e6);
   background-color: var(--md-editor-background-color);
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   display: flex;
@@ -18,9 +21,6 @@
     position: relative;
     border-radius: 0;
   }
-  .copied {
-    display: none !important;
-  }
   .w-md-editor-input {
     width: 50%;
     height: 100%;
@@ -29,15 +29,12 @@
     word-break: break-word !important;
     white-space: pre-wrap !important;
   }
-  .w-md-editor-text-pre .token.title.important {
-    color: #e87211 !important;
-  }
 }
 
 .w-md-editor-preview {
   width: 50%;
   box-sizing: border-box;
-  box-shadow: inset 1px 0 0 0 #dee2e6;
+  border-left: 1px solid var(--md-editor-border-color);
   position: absolute;
   padding: 10px 20px;
   overflow: auto;
@@ -55,11 +52,21 @@
   .contains-task-list li.task-list-item {
     list-style: none;
   }
+  .w-md-editor-preview-body {
+    width: 100%;
+    max-width: min(650px, 100%);
+    margin: 0 auto;
+  }
 }
-.w-md-editor-show-preview .w-md-editor-input {
-  width: 0%;
-  overflow: hidden;
-  background-color: var(--md-editor-background-color);
+.w-md-editor-show-preview {
+  .w-md-editor-input {
+    width: 0%;
+    overflow: hidden;
+    background-color: var(--md-editor-background-color);
+  }
+  .w-md-editor-preview {
+    border-left: none;
+  }
 }
 .w-md-editor-show-preview .w-md-editor-preview {
   width: 100%;
@@ -69,18 +76,25 @@
   width: 100%;
 }
 .w-md-editor-show-edit .w-md-editor-preview {
-  width: 0%;
+  /* Ghost mode: Maintain DOM in editor to keep ToC active.  */
+  width: 10%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
   padding: 0;
+  position: absolute;
 }
 .w-md-editor-fullscreen {
   overflow: hidden;
   position: fixed;
-  z-index: 99999;
+  z-index: 999;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   height: 100% !important;
+  --md-editor-background-color: var(--color-canvas-default, #ffffff);
 }
 .w-md-editor-fullscreen .w-md-editor-content {
   height: 100%;

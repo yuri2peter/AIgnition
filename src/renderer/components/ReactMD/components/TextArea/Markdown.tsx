@@ -1,32 +1,7 @@
-import React, { useContext, useEffect } from 'react';
-import { rehype } from 'rehype';
-import rehypePrism from 'rehype-prism-plus';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { IProps } from '../../Types';
 import { EditorContext } from '../../Context';
-
-function html2Escape(sHtml: string) {
-  return (
-    sHtml
-      // .replace(/```(\w+)?([\s\S]*?)(\s.+)?```/g, (str: string) => {
-      //   return str.replace(
-      //     /[<&"]/g,
-      //     (c: string) => (({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' } as Record<string, string>)[c]),
-      //   );
-      // })
-      .replace(
-        /[<&"]/g,
-        (c: string) =>
-          (
-            ({
-              '<': '&lt;',
-              '>': '&gt;',
-              '&': '&amp;',
-              '"': '&quot;',
-            }) as Record<string, string>
-          )[c]
-      )
-  );
-}
+import { mdProcess1, mdProcess2 } from '../../utils/textProcess';
 
 export interface MarkdownProps
   extends IProps,
@@ -34,7 +9,7 @@ export interface MarkdownProps
 
 export default function Markdown(props: MarkdownProps) {
   const { prefixCls } = props;
-  const { markdown = '', dispatch } = useContext(EditorContext);
+  const { markdown, markdownLazy, dispatch } = useContext(EditorContext);
   const preRef = React.createRef<HTMLPreElement>();
   useEffect(() => {
     if (preRef.current && dispatch) {
@@ -42,32 +17,45 @@ export default function Markdown(props: MarkdownProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  if (!markdown) {
-    return (
-      <pre
-        ref={preRef}
-        className={`${prefixCls}-text-pre wmde-markdown-color`}
-      />
-    );
-  }
-  let mdStr = `<pre class="language-markdown ${prefixCls}-text-pre wmde-markdown-color"><code class="language-markdown">${html2Escape(
-    String.raw`${markdown}`
-  )}\n</code></pre>`;
-
-  try {
-    mdStr = rehype()
-      .data('settings', { fragment: true })
-      // https://github.com/uiwjs/react-md-editor/issues/593
-      // @ts-ignore
-      .use(rehypePrism, { ignoreMissing: true })
-      .processSync(mdStr)
-      .toString();
-  } catch (error) {
-    /* empty */
-  }
-
-  return React.createElement('div', {
-    className: 'wmde-markdown-color',
-    dangerouslySetInnerHTML: { __html: mdStr || '' },
+  const mdHtml = useMdHtml({
+    value: markdown,
+    lazyValue: markdownLazy,
+    prefixCls,
   });
+
+  return (
+    <div
+      className="wmde-markdown-color"
+      dangerouslySetInnerHTML={{ __html: mdHtml }}
+    ></div>
+  );
+}
+
+// parse md to html with rehype(debounced)
+function useMdHtml({
+  value = '',
+  lazyValue = '',
+  prefixCls = '',
+}: {
+  value?: string;
+  lazyValue?: string;
+  prefixCls?: string;
+}) {
+  const isLongText = value.length > 8000;
+  const value1 = useMemo(() => {
+    // no need to parseLazy if it's less than 8000
+    return isLongText
+      ? mdProcess1(value, prefixCls)
+      : mdProcess2(value, prefixCls);
+  }, [value, prefixCls, isLongText]);
+  const [str, setStr] = useState(value1);
+  useEffect(() => {
+    setStr(value1);
+  }, [value1]);
+  useEffect(() => {
+    if (isLongText) {
+      setStr(mdProcess2(lazyValue, prefixCls));
+    }
+  }, [lazyValue, isLongText, prefixCls]);
+  return str;
 }

@@ -1,0 +1,6 @@
+/* For simple use, remove image and font color */
+.root {
+  :global * {
+    font-size: rem(14px) !important;
+  }
+}

@@ -1,0 +1,32 @@
+/* For simple use, remove image and font color */
+.root {
+  max-width: min(650px, 100%);
+  width: 100%;
+
+  :global {
+    table {
+      display: block;
+      overflow: auto;
+    }
+    th {
+      text-align: left;
+      text-wrap: nowrap;
+      min-width: 6em;
+    }
+    h1 {
+      @apply text-5xl;
+    }
+  }
+
+  .customrLink {
+    img,
+    svg {
+      width: 1.25em;
+      height: 1.25em;
+      display: inline;
+      margin: 0;
+      margin-right: 0.325em;
+      vertical-align: text-top;
+    }
+  }
+}

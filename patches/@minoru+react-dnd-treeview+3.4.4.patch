@@ -1,0 +1,44 @@
+diff --git a/node_modules/@minoru/react-dnd-treeview/dist/index.js b/node_modules/@minoru/react-dnd-treeview/dist/index.js
+index b626f5f..0d857fd 100644
+--- a/node_modules/@minoru/react-dnd-treeview/dist/index.js
++++ b/node_modules/@minoru/react-dnd-treeview/dist/index.js
+@@ -770,14 +770,15 @@ var useOpenIdsHelper = function (tree, initialOpen) {
+     };
+     var handleOpen = function (targetIds, callback) {
+         var newOpenIds = [];
++        var openIdsFixed = []; // open without prev state
+         if (Array.isArray(targetIds)) {
+             var targetNodes = tree.filter(function (node) { return targetIds.includes(node.id) && hasChildNodes(tree, node.id); });
+-            newOpenIds = __spreadArray(__spreadArray([], openIds, true), targetNodes.map(function (node) { return node.id; }), true).filter(function (value, index, self) { return self.indexOf(value) === index; });
++            newOpenIds = __spreadArray(__spreadArray([], openIdsFixed, true), targetNodes.map(function (node) { return node.id; }), true).filter(function (value, index, self) { return self.indexOf(value) === index; });
+         }
+         else {
+-            newOpenIds = openIds.includes(targetIds)
+-                ? openIds
+-                : __spreadArray(__spreadArray([], openIds, true), [targetIds], false);
++            newOpenIds = openIdsFixed.includes(targetIds)
++                ? openIdsFixed
++                : __spreadArray(__spreadArray([], openIdsFixed, true), [targetIds], false);
+         }
+         setOpenIds(newOpenIds);
+         if (callback) {
+diff --git a/node_modules/@minoru/react-dnd-treeview/dist/types.d.ts b/node_modules/@minoru/react-dnd-treeview/dist/types.d.ts
+index 62db657..351c4ca 100644
+--- a/node_modules/@minoru/react-dnd-treeview/dist/types.d.ts
++++ b/node_modules/@minoru/react-dnd-treeview/dist/types.d.ts
+@@ -3,11 +3,11 @@ import type { XYCoord, DragSourceMonitor } from "react-dnd";
+ import type { DragDropMonitor } from "dnd-core";
+ import React from "react";
+ export declare type NodeModel<T = unknown> = {
+-    id: number | string;
+-    parent: number | string;
++    id: string;
++    parent: string;
+     text: string;
+-    droppable?: boolean;
+-    data?: T;
++    droppable: boolean;
++    data: T;
+ };
+ export declare type DragItem<T> = NodeModel<T> & {
+     ref: RefObject<HTMLElement>;

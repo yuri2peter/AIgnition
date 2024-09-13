@@ -13,7 +13,7 @@ export default function AppRoutes() {
       <NavigationHack />
       <Routes>
         <Route path="/" element={<AppGuard />}>
-          <Route path="/login" element={null} />
+          <Route path="/auth" element={null} />
           <Route path="/" element={null}>
             <Route path="/" element={<PageViewPage />} />
             <Route path="/:id" element={<PageViewPage />} />

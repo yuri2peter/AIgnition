@@ -2,18 +2,18 @@
   .w-md-editor-toolbar {
     height: 56px;
     flex-shrink: 0;
-    border-bottom: 1px solid var(--mantine-color-gray-3);
+    border-bottom: 1px solid var(--md-editor-border-color);
     background-color: var(--md-editor-background-color);
-    padding: 3px;
+    padding: 4px calc(var(--md-editor-textarea-padding) - 8px);
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-radius: 0;
     user-select: none;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     &.bottom {
       border-bottom: 0px;
-      border-top: 1px solid var(--mantine-color-gray-3);
+      border-top: 1px solid var(--md-editor-border-color);
       border-radius: 0;
     }
     ul,
@@ -22,6 +22,7 @@
       padding: 0;
       list-style: none;
       line-height: initial;
+      text-wrap: nowrap;
     }
     li {
       display: inline-block;

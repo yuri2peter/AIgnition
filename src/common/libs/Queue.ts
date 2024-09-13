@@ -4,8 +4,13 @@ export default class Queue {
   _tasks: QueueTask[] = [];
   _running = false;
   push(task: QueueTask) {
-    this._tasks.push(task);
-    this._run();
+    return new Promise((resolve) => {
+      this._tasks.push(async () => {
+        await task().catch(() => {});
+        resolve(void 0);
+      });
+      this._run();
+    });
   }
   async _run() {
     if (this._running || this._tasks.length === 0) {

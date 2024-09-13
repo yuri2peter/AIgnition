@@ -1,0 +1,15 @@
+diff --git a/node_modules/react-mouse-particles/dist/index.js b/node_modules/react-mouse-particles/dist/index.js
+index 5d96aa7..fbe97fb 100644
+--- a/node_modules/react-mouse-particles/dist/index.js
++++ b/node_modules/react-mouse-particles/dist/index.js
+@@ -152,8 +152,8 @@ var MouseParticles = function (_React$Component) {
+     value: function isCullDom(e) {
+       this.level = 0;
+ 
+-      if (isInputText(e.target)) return true;
+-      if (isTextBox(e.target)) return true;
++      // if (isInputText(e.target)) return true;
++      // if (isTextBox(e.target)) return true;
+       if (!this.cullClassList || !this.cullClassList.length) return false;
+ 
+       return this.isContain(e.target, this.cullClassList);

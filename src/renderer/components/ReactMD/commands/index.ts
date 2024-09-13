@@ -24,12 +24,11 @@ import { title1 } from './title1';
 import { title2 } from './title2';
 import { title3 } from './title3';
 import { title4 } from './title4';
-import { title5 } from './title5';
-import { title6 } from './title6';
 import { table } from './table';
 import { help } from './help';
 import { undo } from './undo';
 import { redo } from './redo';
+import { titleGroup } from './titleGroup';
 
 export interface CommandOrchestrator {
   executeCommand(command: ICommand): void;
@@ -53,6 +52,7 @@ export interface ICommandBase<T> {
   parent?: ICommand<any>;
   keyCommand?: string;
   name?: string;
+  title?: string;
   shortcuts?: string;
   groupName?: string;
   icon?: React.ReactElement;
@@ -71,7 +71,7 @@ export interface ICommandBase<T> {
   execute?: (
     state: ExecuteState,
     api: TextAreaTextApi,
-    dispatch?: React.Dispatch<ContextStore>,
+    ctx?: ContextStore,
     executeCommandState?: ExecuteCommandState,
     shortcuts?: string[]
   ) => void;
@@ -99,12 +99,7 @@ const getCommands: () => ICommand[] = () => [
   undo,
   redo,
   divider,
-  group([title1, title2, title3, title4], {
-    name: 'title',
-    groupName: 'title',
-    icon: title.icon,
-    buttonProps: { 'aria-label': 'Insert title', title: 'Insert title' },
-  }),
+  titleGroup,
   bold,
   strikethrough,
   unorderedListCommand,
@@ -188,7 +183,7 @@ class TextAreaCommandOrchestrator implements CommandOrchestrator {
 
   executeCommand(
     command: ICommand<string>,
-    dispatch?: React.Dispatch<ContextStore>,
+    ctx?: ContextStore,
     state?: ExecuteCommandState,
     shortcuts?: string[]
   ): void {
@@ -196,7 +191,7 @@ class TextAreaCommandOrchestrator implements CommandOrchestrator {
       command.execute(
         { command, ...getStateFromTextArea(this.textArea) },
         this.textApi,
-        dispatch,
+        ctx,
         state,
         shortcuts
       );
@@ -209,8 +204,6 @@ export {
   title2,
   title3,
   title4,
-  title5,
-  title6,
   bold,
   codeBlock,
   comment,
@@ -238,4 +231,7 @@ export {
   getStateFromTextArea,
   TextAreaCommandOrchestrator,
   TextAreaTextApi,
+  undo,
+  redo,
+  titleGroup,
 };

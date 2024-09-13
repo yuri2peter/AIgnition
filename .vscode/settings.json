@@ -6,5 +6,11 @@
     "**/*.less",
     "node_modules/@mantine/core/styles.css"
   ],
-  "css.customData": [".vscode/tailwind.json"]
+  "css.customData": [".vscode/tailwind.json"],
+  "favorites.resources": [
+    {
+      "filePath": "src\\renderer\\pages\\page-view\\compnents\\panels\\PageNav\\NavTree",
+      "group": "Default"
+    }
+  ]
 }

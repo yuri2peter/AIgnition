@@ -16,8 +16,12 @@ export async function saveUploads(fileField: unknown) {
   type PersistentFile = z.infer<typeof PersistentFileSchema>;
   const saveFile = async (f: PersistentFile) => {
     const ext = path.extname(f.originalFilename);
-    const newFilename =
-      path.basename(f.originalFilename, ext) + '.' + shortId() + ext;
+    const newFilename = (
+      path.basename(f.originalFilename, ext) +
+      '.' +
+      shortId() +
+      ext
+    ).replace(/[\s())]+/g, '-');
     const newFilepath = path.resolve(runtimeUploadsPath, newFilename);
     await fs.move(f.filepath, newFilepath);
     return {

@@ -16,6 +16,10 @@ import {
 import { runtimeUploadsPath, rendererPath } from 'src/common/paths.app';
 import handleRoutes from './routes';
 import { MyRouter } from './types/controller';
+import genericApiRateLimiter from '../middlewares/genericApiRateLimiter';
+import authApiRateLimiter from '../middlewares/authApiRateLimiter';
+import sensitiveApiRateLimiter from '../middlewares/sensitiveApiRateLimiter';
+import loggedInRequired from '../middlewares/loggedInRequired';
 
 export default function startKoa() {
   const app = new Koa();
@@ -27,6 +31,7 @@ function applyApp(app: Koa) {
   onerror(app);
   USE_CORS && app.use(cors());
   app.use(new CSRF());
+  useApiInterpreter(app);
   useUpload(app);
   useRoutes(app);
   app.use(staticServer(rendererPath));
@@ -38,7 +43,11 @@ function applyApp(app: Koa) {
   app.use(
     koaPushState(path.resolve(rendererPath, 'index.html'), (ctx) => {
       const { request } = ctx;
-      return request.method === 'GET' && !request.path.startsWith('/api/');
+      return (
+        request.method === 'GET' &&
+        !request.path.startsWith('/api/') &&
+        !request.path.includes('.')
+      );
     })
   );
 }
@@ -67,4 +76,11 @@ function useRoutes(app: Koa) {
   const router = new Router();
   app.use(router.routes());
   handleRoutes(router as unknown as MyRouter);
+}
+
+function useApiInterpreter(app: Koa) {
+  app.use(loggedInRequired);
+  app.use(genericApiRateLimiter);
+  app.use(authApiRateLimiter);
+  app.use(sensitiveApiRateLimiter);
 }

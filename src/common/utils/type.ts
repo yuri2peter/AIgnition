@@ -5,7 +5,7 @@ export function zodEnumFromObjKeys<K extends string>(
   obj: Record<K, any>
 ): z.ZodEnum<[K, ...K[]]> {
   const [firstKey, ...otherKeys] = Object.keys(obj) as K[];
-  return z.enum([firstKey, ...otherKeys]);
+  return z.enum([firstKey as K, ...otherKeys]);
 }
 
 export function zodSafeString(defaultValue = '') {
@@ -13,7 +13,7 @@ export function zodSafeString(defaultValue = '') {
     .string()
     .nullable()
     .optional()
-    .transform((t) => t || defaultValue);
+    .transform((t) => t ?? defaultValue);
 }
 
 export function zodSafeBoolean(defaultValue = false) {
@@ -51,9 +51,17 @@ export function zodSafeType<T extends ZodTypeAny>(
   return schema
     .nullable()
     .optional()
-    .transform((t) => t || defaultValueFixed);
+    .transform((t) => t ?? defaultValueFixed);
 }
 
 export function getParsedId(obj: unknown) {
   return z.object({ id: z.string().min(1) }).parse(obj).id;
+}
+
+export function zodSafeTimestamp() {
+  return z
+    .number()
+    .nullable()
+    .optional()
+    .transform((t) => (typeof t === 'number' ? t : Date.now()));
 }

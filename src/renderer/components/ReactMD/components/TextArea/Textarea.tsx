@@ -12,17 +12,19 @@ export interface TextAreaProps
 
 export default function Textarea(props: TextAreaProps) {
   const { prefixCls, onChange, ...other } = props;
+  const ctx = useContext(EditorContext);
   const {
     markdown,
-    commands,
+    commands = [],
     fullscreen,
     preview,
-    extraCommands,
+    extraCommands = [],
     tabSize,
     defaultTabEnable,
     dispatch,
-    ...otherStore
-  } = useContext(EditorContext);
+  } = ctx;
+  const ctxRef = React.useRef(ctx);
+  ctxRef.current = ctx;
   const textRef = React.useRef<HTMLTextAreaElement>(null);
   const executeRef = React.useRef<TextAreaCommandOrchestrator>();
   const statesRef = React.useRef<ExecuteCommandState>({ fullscreen, preview });
@@ -42,31 +44,6 @@ export default function Textarea(props: TextAreaProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onKeyDown = (
-    e: KeyboardEvent | React.KeyboardEvent<HTMLTextAreaElement>
-  ) => {
-    handleKeyDown(e, tabSize, defaultTabEnable);
-    shortcuts(
-      e,
-      [...(commands || []), ...(extraCommands || [])],
-      executeRef.current,
-      dispatch,
-      statesRef.current
-    );
-  };
-  useEffect(() => {
-    if (textRef.current) {
-      textRef.current.addEventListener('keydown', onKeyDown);
-    }
-    return () => {
-      if (textRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        textRef.current.removeEventListener('keydown', onKeyDown);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <textarea
       autoComplete="off"
@@ -82,6 +59,16 @@ export default function Textarea(props: TextAreaProps) {
       onChange={(e) => {
         dispatch && dispatch({ markdown: e.target.value });
         onChange && onChange(e);
+      }}
+      onKeyDown={(e) => {
+        handleKeyDown(e, tabSize, defaultTabEnable);
+        shortcuts(
+          e,
+          [...commands, ...extraCommands],
+          executeRef.current,
+          ctx,
+          statesRef.current
+        );
       }}
     />
   );

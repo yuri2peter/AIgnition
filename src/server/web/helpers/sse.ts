@@ -27,8 +27,8 @@ export class SseController {
     stream.pipe(ctx.res);
   }
 
-  send(text: string) {
-    this.stream?.write(text);
+  send(data: any) {
+    this.stream?.write(data);
   }
 
   end() {
@@ -43,7 +43,7 @@ class SSEStream extends Transform {
     });
   }
 
-  _transform(data: string, _encoding: string, done: () => void) {
+  _transform(data: any, _encoding: string, done: () => void) {
     this.push(`data: ${JSON.stringify({ data })}\n\n`);
     done();
   }

@@ -4,19 +4,18 @@ import React, {
   useMemo,
   useRef,
   useImperativeHandle,
+  useCallback,
 } from 'react';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import TextArea from './components/TextArea';
 import { ToolbarVisibility } from './components/Toolbar';
-import {
-  getCommands,
-  getExtraCommands,
-  ICommand,
-  TextState,
-  TextAreaCommandOrchestrator,
-} from './commands';
+import { getCommands, getExtraCommands, ICommand, TextRange } from './commands';
 import { reducer, EditorContext, ContextStore } from './Context';
 import type { MDEditorProps } from './Types';
+import { useDebouncedValue } from '@mantine/hooks';
+import MarkdownRender from '../miscs/MarkdownRender';
+import { HistoryManager } from './utils/HistoryManager';
+import { debounce } from 'lodash';
 
 function setGroupPopFalse(data: Record<string, boolean> = {}) {
   Object.keys(data).forEach((keyname) => {
@@ -32,31 +31,57 @@ const InternalMDEditor = React.forwardRef<RefMDEditor, MDEditorProps>(
     const {
       className,
       prefixCls = 'w-md-editor',
-      value: propsValue,
       commands = getCommands(),
       commandsFilter,
       direction,
       extraCommands = getExtraCommands(),
       height = 200,
-      enableScroll = true,
       preview: previewType = 'live',
       fullscreen = false,
       overflow = true,
       previewOptions = {},
       textareaProps,
-      minHeight = 100,
       autoFocus,
       tabSize = 2,
       defaultTabEnable = false,
-      onChange,
-      onStatistics,
-      onHeightChange,
+      onContentChange,
+      instanceId,
+      initValue = '',
       hideToolbar,
       toolbarBottom = false,
-      components,
-      renderTextarea,
+      refPreview,
+      enableScroll,
+      previewHeader,
+      previewFooter,
       ...other
     } = props || {};
+
+    const propsFixed = {
+      className,
+      prefixCls,
+      commands,
+      commandsFilter,
+      direction,
+      extraCommands,
+      height,
+      previewType,
+      fullscreen,
+      overflow,
+      previewOptions,
+      textareaProps,
+      autoFocus,
+      tabSize,
+      defaultTabEnable,
+      onContentChange,
+      initValue,
+      instanceId,
+      hideToolbar,
+      toolbarBottom,
+      enableScroll,
+      refPreview,
+      ...other,
+    };
+
     const cmds = commands
       .map((item) => (commandsFilter ? commandsFilter(item, false) : item))
       .filter(Boolean) as ICommand[];
@@ -64,36 +89,44 @@ const InternalMDEditor = React.forwardRef<RefMDEditor, MDEditorProps>(
       .map((item) => (commandsFilter ? commandsFilter(item, true) : item))
       .filter(Boolean) as ICommand[];
     const [state, dispatch] = useReducer(reducer, {
-      markdown: propsValue,
+      markdown: initValue,
       preview: previewType,
-      components,
       height,
-      minHeight,
       tabSize,
       defaultTabEnable,
-      scrollTop: 0,
-      scrollTopPreview: 0,
       commands: cmds,
       extraCommands: extraCmds,
       fullscreen,
       barPopup: {},
+      markdownLazy: '',
     });
+    const refHistoryManager = useRef(
+      new HistoryManager<{
+        markdown: string;
+        selection: TextRange;
+      }>()
+    );
+    const refTouched = useRef(false);
     const container = useRef<HTMLDivElement>(null);
-    const previewRef = useRef<HTMLDivElement>(null);
-    const enableScrollRef = useRef(enableScroll);
+    const refPreviewInner = useRef<HTMLDivElement | null>(null);
+    const refProps = useRef(propsFixed);
+    const scrollTriggerLog = useRef({ type: '', time: 0 });
+
+    refProps.current = propsFixed;
+    const [markdownLazy = ''] = useDebouncedValue(state.markdown, 100);
 
     useImperativeHandle(ref, () => ({
       ...state,
       container: container.current,
       dispatch,
     }));
-    useMemo(() => (enableScrollRef.current = enableScroll), [enableScroll]);
     useEffect(() => {
       const stateInit: ContextStore = {};
       if (container.current) {
         stateInit.container = container.current || undefined;
       }
-      stateInit.markdown = propsValue || '';
+      stateInit.markdown = initValue;
+      stateInit.markdownLazy = markdownLazy;
       stateInit.barPopup = {};
       if (dispatch) {
         dispatch({ ...state, ...stateInit });
@@ -112,26 +145,26 @@ const InternalMDEditor = React.forwardRef<RefMDEditor, MDEditorProps>(
       .filter(Boolean)
       .join(' ')
       .trim();
-
     useMemo(
       () =>
-        propsValue !== state.markdown &&
-        dispatch({ markdown: propsValue || '' }),
-      [propsValue, state.markdown]
+        markdownLazy !== state.markdownLazy &&
+        dispatch({ markdownLazy: markdownLazy }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [markdownLazy]
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useMemo(
       () => previewType !== state.preview && dispatch({ preview: previewType }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [previewType]
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useMemo(
       () => tabSize !== state.tabSize && dispatch({ tabSize }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [tabSize]
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useMemo(
       () => autoFocus !== state.autoFocus && dispatch({ autoFocus: autoFocus }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [autoFocus]
     );
     useMemo(
@@ -140,34 +173,26 @@ const InternalMDEditor = React.forwardRef<RefMDEditor, MDEditorProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [fullscreen]
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useMemo(
       () => height !== state.height && dispatch({ height: height }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [height]
     );
     useMemo(
-      () =>
-        height !== state.height &&
-        onHeightChange &&
-        onHeightChange(state.height, height, state),
-      [height, onHeightChange, state]
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useMemo(
       () => commands !== state.commands && dispatch({ commands: cmds }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [props.commands]
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useMemo(
       () =>
         extraCommands !== state.extraCommands &&
         dispatch({ extraCommands: extraCmds }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [props.extraCommands]
     );
 
     const textareaDomRef = useRef<HTMLDivElement>();
     const active = useRef<'text' | 'preview'>('preview');
-    const initScroll = useRef(false);
 
     useMemo(() => {
       textareaDomRef.current = state.textareaWarp;
@@ -181,94 +206,107 @@ const InternalMDEditor = React.forwardRef<RefMDEditor, MDEditorProps>(
       }
     }, [state.textareaWarp]);
 
+    useEffect(() => {
+      refTouched.current = false;
+      dispatch({ markdown: refProps.current.initValue });
+      refHistoryManager.current.reset();
+      refHistoryManager.current.push({
+        markdown: refProps.current.initValue,
+        selection: { start: 0, end: 0 },
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [instanceId]);
+
+    useEffect(() => {
+      if (!refTouched.current && markdownLazy === refProps.current.initValue) {
+        // if nothing changed
+      } else {
+        refTouched.current = true;
+        refProps.current.onContentChange?.(markdownLazy);
+      }
+    }, [markdownLazy]);
+
     const handleScroll = (
       e: React.UIEvent<HTMLDivElement>,
       type: 'text' | 'preview'
     ) => {
-      if (!enableScrollRef.current) return;
+      if (!refProps.current.enableScroll) return;
+      if (
+        scrollTriggerLog.current.type !== type &&
+        Date.now() - scrollTriggerLog.current.time < 100
+      )
+        return;
+      scrollTriggerLog.current = {
+        type,
+        time: Date.now(),
+      };
       const textareaDom = textareaDomRef.current;
-      const previewDom = previewRef.current ? previewRef.current : undefined;
-      if (!initScroll.current) {
-        active.current = type;
-        initScroll.current = true;
-      }
+      const previewDom = refPreviewInner.current;
+
       if (textareaDom && previewDom) {
         const scale =
           (textareaDom.scrollHeight - textareaDom.offsetHeight) /
           (previewDom.scrollHeight - previewDom.offsetHeight);
-        if (e.target === textareaDom && active.current === 'text') {
+        if (e.target === textareaDom && type === 'text') {
           previewDom.scrollTop = textareaDom.scrollTop / scale;
         }
-        if (e.target === previewDom && active.current === 'preview') {
+        if (e.target === previewDom && type === 'preview') {
           textareaDom.scrollTop = previewDom.scrollTop * scale;
         }
-        let scrollTop = 0;
-        if (active.current === 'text') {
-          scrollTop = textareaDom.scrollTop || 0;
-        } else if (active.current === 'preview') {
-          scrollTop = previewDom.scrollTop || 0;
-        }
-        dispatch({ scrollTop });
       }
     };
 
-    const previewClassName = `${prefixCls}-preview ${
-      previewOptions.className || ''
-    }`;
     const handlePreviewScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) =>
       handleScroll(e, 'preview');
-    let mdPreview = useMemo(
-      () => (
-        <div ref={previewRef} className={previewClassName}>
-          <MarkdownPreview
-            {...previewOptions}
-            onScroll={handlePreviewScroll}
-            source={state.markdown || ''}
-          />
-        </div>
-      ),
-      [previewClassName, previewOptions, state.markdown]
+    const markdownRender = useMemo(
+      () => <MarkdownRender {...previewOptions} text={markdownLazy} />,
+      [previewOptions, markdownLazy]
     );
-    const preview =
-      components?.preview &&
-      components?.preview(state.markdown || '', state, dispatch);
-    if (preview && React.isValidElement(preview)) {
-      mdPreview = (
-        <div
-          className={previewClassName}
-          ref={previewRef}
-          onScroll={handlePreviewScroll}
-        >
-          {preview}
+    const mdPreview = (
+      <div
+        ref={(dom) => {
+          refPreview?.(dom);
+          refPreviewInner.current = dom;
+        }}
+        className={`${prefixCls}-preview`}
+        onScroll={handlePreviewScroll}
+      >
+        <div className={`${prefixCls}-preview-body`}>
+          {previewHeader}
+          {markdownRender}
+          {previewFooter}
         </div>
-      );
-    }
+      </div>
+    );
 
     const containerStyle = { ...other.style, height: state.height || '100%' };
     const containerClick = () =>
       dispatch({ barPopup: { ...setGroupPopFalse(state.barPopup) } });
-
-    const changeHandle = (evn: React.ChangeEvent<HTMLTextAreaElement>) => {
-      onChange && onChange(evn.target.value, evn, state);
-      if (textareaProps && textareaProps.onChange) {
-        textareaProps.onChange(evn);
-      }
-      if (
-        state.textarea &&
-        state.textarea instanceof HTMLTextAreaElement &&
-        onStatistics
-      ) {
-        const obj = new TextAreaCommandOrchestrator(state.textarea!);
-        const objState = (obj.getState() || {}) as TextState;
-        onStatistics({
-          ...objState,
-          lineCount: evn.target.value.split('\n').length,
-          length: evn.target.value.length,
+    const changeHandleDebounced = useMemo(() => {
+      return debounce((evn: React.ChangeEvent<HTMLTextAreaElement>) => {
+        refHistoryManager.current.push({
+          markdown: evn.target.value,
+          selection: {
+            start: evn.target.selectionStart,
+            end: evn.target.selectionEnd,
+          },
         });
-      }
+      }, 1000);
+    }, []);
+    const changeHandle = useCallback(
+      (evn: React.ChangeEvent<HTMLTextAreaElement>) => {
+        dispatch({ markdown: evn.target.value });
+        changeHandleDebounced(evn);
+      },
+      [changeHandleDebounced]
+    );
+    const ctx: ContextStore = {
+      ...state,
+      historyManager: refHistoryManager.current,
+      dispatch,
     };
     return (
-      <EditorContext.Provider value={{ ...state, dispatch }}>
+      <EditorContext.Provider value={ctx}>
         <div
           ref={container}
           className={cls}
@@ -291,11 +329,11 @@ const InternalMDEditor = React.forwardRef<RefMDEditor, MDEditorProps>(
                 autoFocus={autoFocus}
                 {...textareaProps}
                 onChange={changeHandle}
-                renderTextarea={components?.textarea || renderTextarea}
                 onScroll={(e) => handleScroll(e, 'text')}
               />
             )}
-            {/(live|preview)/.test(state.preview || '') && mdPreview}
+            {/* {/(live|preview)/.test(state.preview || '') && mdPreview} */}
+            {mdPreview}
           </div>
           <ToolbarVisibility
             hideToolbar={hideToolbar}

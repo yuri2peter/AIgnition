@@ -8,6 +8,8 @@ import fs from 'fs-extra';
 import lodash from 'lodash';
 import { z } from 'zod';
 import path from 'path';
+import { decode, encode } from 'js-base64';
+import { getFileExtension } from '../utils/string';
 
 const { throttle } = lodash;
 
@@ -19,54 +21,44 @@ const backupPlanSchema = z.object({
 // 备份计划
 type BackupPlan = z.infer<typeof backupPlanSchema>;
 
-// 版本修复器, 开发者可以在此处检查导入的record是否是最新版本, 如果不是,可以用changeData对其版本进行修复升级
-export type DataVersionFixer<T, U = unknown> = (
-  record: Record<U>,
-  setData: (recipe: (base: U) => T) => void
-) => void;
-
-type DataLoadHandle<T> = (data: T) => void;
+type DataLoadHandle<T> = (get: () => T, set: (data: T) => void) => void;
 
 // 数据记录
 interface Record<T> {
   data: T;
-  version: number;
   updatedAtString: string;
   updatedAtTime: number;
 }
 
 export default class JsonDb<T> {
   readonly file: string = '';
-  readonly version: number = 0;
   readonly debug: boolean = false;
+  readonly encode: boolean = false;
   private data: T;
-  private versionFixer: DataVersionFixer<T> = () => {};
-  private onDataLoad: DataLoadHandle<T>;
+  private onLoad: DataLoadHandle<T>;
   save: (immidiate?: boolean) => void = () => {};
 
   constructor(params: {
     file: string; // 数据文件
     defaultValue: T; // 默认值
-    version?: number; // 版本号
-    versionFixer?: DataVersionFixer<T>; // 版本修复器
-    onDataLoad?: DataLoadHandle<T>; // 数据加载后对数据的额外操作（如初始化、完整性检查）
+    onLoad?: DataLoadHandle<T>; // 数据加载后对数据的额外操作（如初始化、完整性检查）
     saveThrottleDelay?: number; // 保存动作的延迟
     backup?: BackupPlan; // 备份计划
     debug?: boolean; // 是否开启调试
+    encode?: boolean; // 是否启用 base64 编码
   }) {
     const {
       file,
       defaultValue,
-      version = 1,
-      versionFixer = () => {},
-      onDataLoad = () => {},
+      onLoad = () => {},
       saveThrottleDelay = 1000,
       backup,
       debug,
+      encode,
     } = params;
     this.debug = !!debug;
+    this.encode = !!encode;
     this.file = file;
-    this.version = version;
     this.data = defaultValue;
     const saveThrottle = throttle(() => {
       this.saveFile();
@@ -78,8 +70,8 @@ export default class JsonDb<T> {
         saveThrottle();
       }
     };
-    this.versionFixer = versionFixer;
-    this.onDataLoad = onDataLoad;
+    this.onLoad = onLoad;
+    this.handleOnLoad();
     this.loadFile();
     this.startBackupPlan(backup);
   }
@@ -93,15 +85,31 @@ export default class JsonDb<T> {
     this.save(true);
   }
 
-  private loadFile(file?: string) {
+  loadFile() {
     try {
-      const content = fs.readFileSync(file || this.file, 'utf8');
+      let content = fs.readFileSync(this.file, 'utf8');
+      if (this.encode) {
+        content = decode(content);
+      }
       const record = JSON.parse(content) as Record<unknown>;
       this.importRecord(record);
     } catch (error) {
       console.log('[jsonDb] Error parsing db file, use default value.');
     }
     this.saveFile();
+  }
+
+  private handleOnLoad() {
+    try {
+      this.onLoad(
+        () => this.data,
+        (newData: T) => {
+          this.data = newData;
+        }
+      );
+    } catch (error) {
+      console.error('[jsonDb] onLoad error:', error);
+    }
   }
 
   private startBackupPlan(backup?: BackupPlan) {
@@ -122,8 +130,10 @@ export default class JsonDb<T> {
           console.log(`[jsonDb] Backup at ${timeStr}.`);
         }
 
+        const ext = getFileExtension(this.file);
+
         // 写入文件
-        const filePath = path.join(dir, `${timeStr}.json`);
+        const filePath = path.join(dir, `${timeStr}${ext ? `.${ext}` : ''}`);
         this.saveFile(filePath);
 
         // 删除超限的备份
@@ -149,9 +159,10 @@ export default class JsonDb<T> {
           index < backupFileNames.length - maxBackups;
           index++
         ) {
-          fs.unlink(path.join(dir, backupFileNames[index])).catch(() => {
+          fs.unlink(path.join(dir, backupFileNames[index]!)).catch(() => {
             console.warn(
-              '[jsonDb] Error deleting backup file ' + backupFileNames[index]
+              '[jsonDb] Error occurred when deleting backup file ' +
+                backupFileNames[index]
             );
           });
         }
@@ -162,20 +173,20 @@ export default class JsonDb<T> {
   private saveFile(file?: string) {
     const filePath = file || this.file;
     fs.ensureFileSync(filePath);
-    fs.writeFileSync(filePath, JSON.stringify(this.exportRecord(), null, 2));
+    let content = JSON.stringify(this.exportRecord(), null, 2);
+    if (this.encode) {
+      content = encode(content);
+    }
+    fs.writeFileSync(filePath, content);
   }
 
   importRecord(record: Record<unknown>) {
     this.data = record.data as T;
-    this.versionFixer(record, (recipe) => {
-      this.set(recipe(this.data));
-    });
-    this.onDataLoad(this.data);
+    this.handleOnLoad();
   }
 
   exportRecord(): Record<unknown> {
     return {
-      version: this.version,
       updatedAtString: new Date().toString(),
       updatedAtTime: new Date().getTime(),
       data: this.data,
@@ -190,7 +201,7 @@ import path from 'path';
 import JsonDb from './libs/jsonDb';
 
 const dbFile = path.resolve('./data/db/main.json');
-const dbBackUpDir = path.resolve('./data/db/main_backup');
+const dbBackUpDir = path.resolve('./data/db/main_backups');
 
 export const db = new JsonDb({
   file: dbFile,
@@ -199,10 +210,14 @@ export const db = new JsonDb({
     cronExp: '*/30 * * * *',
     maxBackups: 150,
   },
-  version: 1,
   defaultValue: { hello: 'world' },
   debug: true,
-  versionFixer: () => {},
+  onLoad: (get, set) => {
+    // Schema fix
+    set(DataSchema.parse(get()));
+    const data = get();
+    // Other fixes...
+  },
 });
 
 =================

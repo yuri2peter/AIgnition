@@ -1,12 +1,24 @@
 import { saveAs } from 'file-saver';
 
-export function uploadFileFromBrowser(accept = '*'): Promise<File> {
+export function uploadFileFromBrowser(
+  multiple: false,
+  accept?: string
+): Promise<File>;
+export function uploadFileFromBrowser(
+  multiple: true,
+  accept?: string
+): Promise<File[]>;
+export function uploadFileFromBrowser(
+  multiple = false,
+  accept = '*'
+): Promise<File | File[]> {
   return new Promise((resolve, reject) => {
     let fileCancle = true;
     // Create a hidden input element and open the file picker dialog
     const elInput = document.createElement('input');
     elInput.type = 'file';
     elInput.accept = accept;
+    elInput.multiple = multiple;
     elInput.style.display = 'none';
     document.body.append(elInput); // For iOS compatibility, must be mounted to body
     // Listen for cancel actions
@@ -26,7 +38,11 @@ export function uploadFileFromBrowser(accept = '*'): Promise<File> {
       fileCancle = false;
       const file = elInput?.files?.[0];
       if (file) {
-        resolve(file);
+        if (multiple) {
+          resolve(Array.from(elInput.files!));
+        } else {
+          resolve(file);
+        }
       } else {
         reject('cancelled upload');
       }

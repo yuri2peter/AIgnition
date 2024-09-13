@@ -5,13 +5,10 @@ import { svgIconProps } from './defines';
 import { IconStrikethrough } from '@tabler/icons-react';
 
 export const strikethrough: ICommand = {
-  name: 'strikethrough',
+  name: 'Strikethrough',
   keyCommand: 'strikethrough',
-  shortcuts: 'ctrl+shift+x',
-  buttonProps: {
-    'aria-label': 'Add strikethrough text (ctrl + shift + x)',
-    title: 'Add strikethrough text (ctrl + shift + x)',
-  },
+  shortcuts: 'ctrlcmd+shift+x',
+  title: 'Add strikethrough text (Ctrl + Shift + X)',
   prefix: '~~',
   icon: <IconStrikethrough data-name="strikethrough" {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {

@@ -1,0 +1,48 @@
+.root {
+  height: 100%;
+  padding: 0px 20px;
+  flex-grow: 0;
+  overflow: auto;
+  /* to fix long pre text render bug */
+  position: absolute;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+
+.stack {
+  width: 100%;
+  max-width: min(650px, 100%);
+  @apply mx-auto;
+  position: relative;
+}
+
+.stackTop {
+  position: sticky;
+  height: 64px;
+  top: 0;
+  background: linear-gradient(to bottom, #ffffff 0%, #ffffff00 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.stackBottom {
+  position: sticky;
+  height: 64px;
+  bottom: 0;
+  background: linear-gradient(to top, #ffffff 0%, #ffffff00 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.rightside {
+  margin-top: 96px;
+  position: sticky;
+  top: 48px;
+  width: 450px;
+  max-height: 80vh;
+  overflow: auto;
+  padding-right: 150px;
+  padding-left: 32px;
+  @apply py-8;
+}

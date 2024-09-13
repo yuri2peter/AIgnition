@@ -1,33 +1,68 @@
 import { z } from 'zod';
 import {
   zodSafeString,
-  zodSafeNumber,
-  zodSafeBoolean,
   zodSafeArray,
+  zodSafeTimestamp,
+  zodSafeBoolean,
 } from '../utils/type';
 
 export const ROOT_PAGE_ID = 'ROOT_PAGE';
 
-export const PageInfoSchema = z.object({
-  id: zodSafeString(),
-  childrenIds: zodSafeArray(zodSafeString()),
-  title: zodSafeString(),
-  isPublic: zodSafeBoolean(), // Is this page public to other users?
-  createdAt: zodSafeNumber(), // When this page was created
-  updatedAt: zodSafeNumber(), // When this page was last updated
-});
-export const PageInfosSchema = zodSafeArray(PageInfoSchema);
+export const PageCustomIdSchema = z
+  .string()
+  .refine((id) => id !== ROOT_PAGE_ID, {
+    message: 'id cannot be ROOT_PAGE',
+  })
+  .refine((id) => !id.startsWith('auth'), {
+    message: 'id cannot start with "auth"',
+  })
+  .refine((id) => /^[A-Za-z0-9_-]+$/.test(id), {
+    message: 'id can only contain A-Z, a-z, 0-9, -, _',
+  });
 
-export const PageSchema = PageInfoSchema.extend({
-  privateViews: zodSafeNumber(), // Number of private views
-  privateViewAt: zodSafeNumber(), // When this page was last private view
-  publicViews: zodSafeNumber(), // Number of public views
-  publicViewAt: zodSafeNumber(), // When this page was last public view
+export const PageSchema = z.object({
+  id: zodSafeString(),
+  title: zodSafeString(),
+  children: zodSafeArray(zodSafeString()), // subPageIds
+  isFolder: zodSafeBoolean(), // whether this page is a folder
+  isPublicFolder: zodSafeBoolean(), // whether this page is public
+  isFavorite: zodSafeBoolean(), // whether this page is favorite
+  createdAt: zodSafeTimestamp(), // When this page was created
+  updatedAt: zodSafeTimestamp(), // When this page was last updated
   content: zodSafeString(), // The content of the page
 });
 export const PagesSchema = zodSafeArray(PageSchema);
 
-export type PageInfo = z.infer<typeof PageInfoSchema>;
-export type PageInfos = z.infer<typeof PageInfosSchema>;
 export type Page = z.infer<typeof PageSchema>;
+export type ComputedPage = Page & {
+  computed: {
+    isPublic: boolean;
+    parent?: string;
+  };
+};
 export type Pages = z.infer<typeof PagesSchema>;
+
+// deprecated
+export const PrivacyLevelData = [
+  {
+    label: 'Public',
+    value: 0,
+    color: 'teal',
+    hightlightColor: 'teal',
+    tooltip: 'All visitors can view',
+  },
+  {
+    label: 'Normal',
+    value: 1,
+    color: 'gray',
+    hightlightColor: 'blue',
+    tooltip: 'Only you can view',
+  },
+  {
+    label: 'Protected',
+    value: 2,
+    color: 'orange',
+    hightlightColor: 'orange',
+    tooltip: 'Only you can view. AI tools will be disabled',
+  },
+];

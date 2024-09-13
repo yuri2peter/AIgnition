@@ -10,4 +10,4 @@ services:
       - SERVER_PORT=3000
     volumes:
       - ./dist:/dist
-    command: "node ./dist/server/main.js"
+    command: "node ./server/main.js"

@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 // 检查字符串是否是以某些字符开头,支持传入除外列表
 // 如 startsWith('abc', ['a']) === true
 // 但是 startsWith('abc', ['a'], ['ab']) === false
-export function startsWith(
+export function startsWithMulti(
   str: string,
   checkList: string[],
   excludeList: string[] = []
@@ -35,7 +35,7 @@ export function upperCaseFirst(str: string) {
   if (!str) {
     return '';
   }
-  return str[0].toUpperCase() + str.slice(1, str.length);
+  return str[0]!.toUpperCase() + str.slice(1, str.length);
 }
 
 // 字节加单位
@@ -70,4 +70,33 @@ export function autoRenameWithIndex(newName: string, localNames: string[]) {
 
 export function shortId() {
   return nanoid(6);
+}
+
+// 检查文本是否包含任何关键词
+//
+// @param text 要检查的文本
+// @param keywords 关键词过滤器，每个关键词占一行
+// @returns 如果文本包含任何关键词，则返回 true，否则返回 false
+export function checkTextContainsKeywords(text: string, keywords: string) {
+  const filters = keywords
+    .split('\n')
+    .map((t) => t.trim())
+    .filter(Boolean);
+  if (filters.length === 0) {
+    return false;
+  }
+  return filters.some((t) => text.includes(t));
+}
+
+export function getFileExtension(fileName: string) {
+  // 使用lastIndexOf() 获取最后一个"."的位置
+  const dotIndex = fileName.lastIndexOf('.');
+
+  // 如果没有找到"."，则返回空字符串
+  if (dotIndex === -1) {
+    return '';
+  }
+
+  // 从最后一个"."之后截取字符串
+  return fileName.substring(dotIndex + 1);
 }

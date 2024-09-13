@@ -4,6 +4,7 @@ import { EditorContext, PreviewType, ContextStore } from '../../Context';
 import { ICommand } from '../../commands';
 import Child from './Child';
 import './index.css';
+import { Tooltip } from '@mantine/core';
 
 export interface IToolbarProps extends IProps {
   overflow?: boolean;
@@ -14,6 +15,7 @@ export interface IToolbarProps extends IProps {
 
 export function ToolbarItems(props: IToolbarProps) {
   const { prefixCls, overflow } = props;
+  const ctx = useContext(EditorContext);
   const {
     fullscreen,
     preview,
@@ -21,7 +23,7 @@ export function ToolbarItems(props: IToolbarProps) {
     components,
     commandOrchestrator,
     dispatch,
-  } = useContext(EditorContext);
+  } = ctx;
   const originalOverflow = useRef('');
 
   function handleClick(command: ICommand<string>, name?: string) {
@@ -50,7 +52,7 @@ export function ToolbarItems(props: IToolbarProps) {
     if (Object.keys(state).length) {
       dispatch({ ...state });
     }
-    commandOrchestrator && commandOrchestrator.executeCommand(command);
+    commandOrchestrator && commandOrchestrator.executeCommand(command, ctx);
   }
 
   useEffect(() => {
@@ -114,26 +116,24 @@ export function ToolbarItems(props: IToolbarProps) {
         return (
           <li key={idx} {...item.liProps} className={activeBtn ? 'active' : ''}>
             {com && React.isValidElement(com) && com}
-            {!com && !item.buttonProps && item.icon}
-            {!com &&
-              item.buttonProps &&
-              React.createElement(
-                'button',
-                {
-                  type: 'button',
-                  key: idx,
-                  disabled,
-                  'data-name': item.name,
-                  ...item.buttonProps,
-                  onClick: (
-                    evn: React.MouseEvent<HTMLButtonElement, MouseEvent>
-                  ) => {
-                    evn.stopPropagation();
-                    handleClick(item, item.groupName);
-                  },
-                },
-                item.icon
-              )}
+            <Tooltip label={item.title} openDelay={500}>
+              <button
+                key={idx}
+                type="button"
+                disabled={disabled}
+                data-name={item.name}
+                {...(item.buttonProps ?? {})}
+                onClick={(
+                  e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                ) => {
+                  e.stopPropagation();
+                  handleClick(item, item.groupName);
+                }}
+              >
+                {item.icon}
+                <span>{props.isChild ? item.name : null}</span>
+              </button>
+            </Tooltip>
             {item.children && (
               <Child
                 overflow={overflow}
@@ -153,7 +153,7 @@ export function ToolbarItems(props: IToolbarProps) {
 }
 
 export default function Toolbar(props: IToolbarProps = {}) {
-  const { prefixCls, isChild, className } = props;
+  const { prefixCls, isChild, className = '' } = props;
   const { commands, extraCommands } = useContext(EditorContext);
   return (
     <div className={`${prefixCls}-toolbar ${className}`}>

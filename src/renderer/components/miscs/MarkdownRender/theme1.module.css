@@ -1,9 +1,0 @@
-/* For simple use, remove image and font color */
-.root {
-  * {
-    font-size: rem(14px);
-  }
-  img {
-    display: none;
-  }
-}

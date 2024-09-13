@@ -5,14 +5,11 @@ import { svgIconProps } from './defines';
 import { IconCode, IconCodeDots } from '@tabler/icons-react';
 
 export const codeBlock: ICommand = {
-  name: 'codeBlock',
+  name: 'Code Block',
   keyCommand: 'codeBlock',
   shortcuts: 'ctrlcmd+shift+j',
   prefix: '```',
-  buttonProps: {
-    'aria-label': 'Insert Code Block (ctrl + shift + j)',
-    title: 'Insert Code Block (ctrl + shift +j)',
-  },
+  title: 'Insert Code Block (Ctrl + Shift +J)',
   icon: <IconCodeDots {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     const newSelectionRange = selectWord({
@@ -75,14 +72,11 @@ export const codeBlock: ICommand = {
 };
 
 export const code: ICommand = {
-  name: 'code',
-  keyCommand: 'code',
+  name: 'Code',
+  keyCommand: 'Code',
   shortcuts: 'ctrlcmd+j',
   prefix: '`',
-  buttonProps: {
-    'aria-label': 'Insert code (ctrl + j)',
-    title: 'Insert code (ctrl + j)',
-  },
+  title: 'Insert code (Ctrl + J)',
   icon: <IconCode {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     if (state.selectedText.indexOf('\n') === -1) {

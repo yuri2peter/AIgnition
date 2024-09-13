@@ -2,6 +2,16 @@ import path from 'path';
 
 export const AppPath = path.resolve(__dirname, '..');
 export const runtimePath = path.resolve(AppPath, 'runtime');
+export const runtimeTempPath = path.resolve(runtimePath, 'temp');
+export const runtimeTempArchivePath = path.resolve(runtimeTempPath, 'archive');
+export const runtimeTempArchiveZipPath = path.resolve(
+  runtimeTempArchivePath,
+  'data.zip'
+);
+export const runtimeTempArchiveDirPath = path.resolve(
+  runtimeTempArchivePath,
+  'data'
+);
 export const runtimeUploadsPath = path.resolve(runtimePath, 'uploads');
 export const runtimeDataPath = path.resolve(runtimePath, 'data');
 export const runtimeLogsPath = path.resolve(runtimePath, 'logs');

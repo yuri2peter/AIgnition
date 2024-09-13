@@ -19,7 +19,7 @@ export default function shortcutsHandle(
   e: KeyboardEvent | React.KeyboardEvent<HTMLTextAreaElement>,
   commands: ICommand[] = [],
   commandOrchestrator?: TextAreaCommandOrchestrator,
-  dispatch?: React.Dispatch<ContextStore>,
+  ctx?: ContextStore,
   state?: ExecuteCommandState
 ) {
   const data = getCommands(commands || []);
@@ -66,7 +66,7 @@ export default function shortcutsHandle(
   if (command && commandOrchestrator) {
     e.stopPropagation();
     e.preventDefault();
-    commandOrchestrator.executeCommand(command, dispatch, state, shortcuts);
+    commandOrchestrator.executeCommand(command, ctx, state, shortcuts);
     return;
   }
 }

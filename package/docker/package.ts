@@ -1,8 +1,9 @@
 import path from 'path';
 import fs from 'fs-extra';
 import { executeCommand } from '../../dev/utils/miscs';
+import versionInfo from '../../src/common/version.json';
 
-const buildCommand = 'docker build -f ./Dockerfile -t myapp:v1 ./';
+const buildCommand = `docker build -f ./Dockerfile -t yuri2/aignition:${versionInfo.version} ./`;
 
 const pathDist = path.resolve(__dirname, '../../dist');
 const pathContext = path.resolve(__dirname, 'context');

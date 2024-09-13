@@ -34,7 +34,7 @@ export const MAX_UPLOAD_FILE_SIZE = 1024 * 1024 * 1024;
 export const UPLOADS_URL_PREFIX = '/uploads';
 
 // 开发渲染时不限制host(DANGER)
-export const DEV_RENDERER_ALLOWED_ALL_HOSTS = false;
+export const DEV_RENDERER_ALLOWED_ALL_HOSTS = true;
 
 // 启用CHII调试器
 export const USE_CHII = false;
@@ -59,3 +59,7 @@ export const OPEN_BROWSER_AFTER_WEB_DEV_START =
 // 前端web开发时是否自动打开CHII
 export const OPEN_CHII_AFTER_WEB_DEV_START =
   false && USE_CHII && IS_DEV && IS_WIN;
+
+// auth
+export const COOKIE_NAME = 'auth_token';
+export const TOKEN_MAX_AGE = 7 * 24 * 3600 * 1000; // TOKEN过期时间为7天

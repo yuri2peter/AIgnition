@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import type { MarkdownPreviewProps } from '@uiw/react-markdown-preview/nohighlight';
 import type { ITextAreaProps } from './components/TextArea/index';
 import type { ICommand, TextState } from './commands';
-import type { ContextStore, PreviewType } from './Context';
+import type { PreviewType } from './Context';
 
 export interface IProps {
   prefixCls?: string;
@@ -17,30 +17,17 @@ export interface Statistics extends TextState {
 }
 
 export interface MDEditorProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>,
+  extends Omit<
+      React.HTMLAttributes<HTMLDivElement>,
+      'onChange' | 'value' | 'defaultValue'
+    >,
     IProps {
-  /**
-   * The Markdown value.
-   */
-  value?: string;
+  instanceId?: string | number;
+  initValue?: string;
   /**
    * Event handler for the `onChange` event.
    */
-  onChange?: (
-    value?: string,
-    event?: React.ChangeEvent<HTMLTextAreaElement>,
-    state?: ContextStore
-  ) => void;
-  /**
-   * editor height change listener
-   */
-  onHeightChange?: (
-    value?: CSSProperties['height'],
-    oldValue?: CSSProperties['height'],
-    state?: ContextStore
-  ) => void;
-  /** Some data on the statistics editor. */
-  onStatistics?: (data: Statistics) => void;
+  onContentChange?: (value: string) => void;
   /**
    * Can be used to make `Markdown Editor` focus itself on initialization. Defaults to on.
    * it will be set to true when either the source `textarea` is focused,
@@ -72,14 +59,6 @@ export interface MDEditorProps
    */
   overflow?: boolean;
   /**
-   * Maximum drag height.
-   */
-  maxHeight?: number;
-  /**
-   * Minimum drag height.
-   */
-  minHeight?: number;
-  /**
    * This is reset [react-markdown](https://github.com/rexxars/react-markdown) settings.
    */
   previewOptions?: Omit<MarkdownPreviewProps, 'source'>;
@@ -87,29 +66,6 @@ export interface MDEditorProps
    * Set the `textarea` related props.
    */
   textareaProps?: ITextAreaProps;
-  /**
-   * Use div to replace TextArea or re-render TextArea
-   * @deprecated Please use ~~`renderTextarea`~~ -> `components`
-   */
-  renderTextarea?: ITextAreaProps['renderTextarea'];
-  /**
-   * re-render element
-   */
-  components?: {
-    /** Use div to replace TextArea or re-render TextArea */
-    textarea?: ITextAreaProps['renderTextarea'];
-    /**
-     * Override the default command element
-     * _`toolbar`_ < _`command[].render`_
-     */
-    toolbar?: ICommand['render'];
-    /** Custom markdown preview */
-    preview?: (
-      source: string,
-      state: ContextStore,
-      dispath: React.Dispatch<ContextStore>
-    ) => JSX.Element;
-  };
   /**
    * The number of characters to insert when pressing tab key.
    * Default `2` spaces.
@@ -146,4 +102,7 @@ export interface MDEditorProps
    * https://github.com/uiwjs/react-md-editor/issues/462
    */
   direction?: CSSProperties['direction'];
+  refPreview?: React.RefCallback<HTMLDivElement>;
+  previewHeader?: React.ReactNode;
+  previewFooter?: React.ReactNode;
 }

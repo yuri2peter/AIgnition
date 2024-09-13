@@ -1,5 +1,5 @@
 import { TextRange } from '../commands';
-import { TextAreaTextApi, ExecuteState } from '../commands';
+import { TextAreaTextApi } from '../commands';
 
 export interface TextSection {
   text: string;
@@ -128,7 +128,7 @@ export function getSurroundingWord(text: string, position: number): TextRange {
 
   // iterate to the left
   for (let i = position; i - 1 > -1; i--) {
-    if (isWordDelimiter(text[i - 1])) {
+    if (isWordDelimiter(text[i - 1]!)) {
       start = i;
       break;
     }
@@ -136,7 +136,7 @@ export function getSurroundingWord(text: string, position: number): TextRange {
 
   // iterate to the right
   for (let i = position; i < text.length; i++) {
-    if (isWordDelimiter(text[i])) {
+    if (isWordDelimiter(text[i]!)) {
       end = i;
       break;
     }

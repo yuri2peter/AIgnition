@@ -15,7 +15,7 @@ const TextInputWithUploader: React.FC<
   const handleUploadClick = async () => {
     setLoading(true);
     try {
-      const file = await uploadFileFromBrowser(accept).catch(() => {
+      const file = await uploadFileFromBrowser(false, accept).catch(() => {
         return null;
       });
       if (!file) {

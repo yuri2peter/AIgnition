@@ -33,7 +33,7 @@ declare module '*.css' {
   const content: Styles;
   export default content;
 }
-
+declare module 'react-emoji-selectors';
 declare module 'koa-static-spa';
 declare module 'koa-onerror';
 declare module 'open-browsers';

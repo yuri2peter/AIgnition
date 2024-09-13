@@ -1,254 +1,292 @@
 import { createZustandStore } from 'src/common/libs/createZustand';
-import { api, apiErrorHandler } from '../helpers/api';
+import { api } from '../helpers/api';
 import { getParsedId } from 'src/common/utils/type';
 import {
+  ComputedPage,
   Page,
-  PageInfo,
-  PageInfoSchema,
-  PageInfos,
-  PageInfosSchema,
   PageSchema,
+  PagesSchema,
   ROOT_PAGE_ID,
 } from 'src/common/type/page';
-import { findFlatRelatives } from 'src/common/utils/tree';
 import { createSelector } from 'reselect';
+import { decode } from 'js-base64';
 import { navigate } from '../hacks/navigate';
-
-// Page Navigation Tree Structure (Recursive)
-export type PageNavNode = {
-  opened: boolean;
-  actived: boolean;
-} & PageInfo;
-
+import { getPageRoute } from '../helpers/miscs';
+import {
+  dfsTraversal,
+  getNodeById,
+  getCurrentTreeNodeRelated,
+  getAncestorsNodes,
+} from 'src/common/utils/tree';
+import { MyTreeItem } from '../pages/page-view/C2/panels/PageNav/MainNavTree/defines';
+import { isEqual } from 'lodash';
+import {
+  emitEventPageUpdated,
+  emitEventReloadTree,
+} from '../pages/page-view/C2/panels/PageNav/events';
 interface Store {
-  pageInfos: PageInfos;
+  pagesLoaded: boolean;
+  pageFetchError: boolean;
+  pages: Page[];
   currentPageId: string;
-  currentPage: Page | null;
-  pageNavNodes: PageNavNode[];
-  clipboardPageId: string;
-  clipboardMode: 'copy' | 'cut';
 }
 
 const defaultStore: Store = {
-  pageInfos: [],
+  pagesLoaded: false,
+  pageFetchError: false,
+  pages: [],
   currentPageId: '',
-  clipboardMode: 'copy',
-  clipboardPageId: '',
-  pageNavNodes: [],
-  currentPage: null,
 };
 
 export const usePageStore = createZustandStore(defaultStore, (set, get) => {
-  const pullPageInfos = async () => {
-    const { data } = await api().post('/api/page/get-infos');
+  const pullPages = async () => {
+    const { data } = await api().post('/api/page/get-all-items');
+    const pages = PagesSchema.parse(data);
     set({
-      pageInfos: PageInfosSchema.parse(data),
+      pages,
+      pagesLoaded: true,
     });
-    calcPageNavNodes();
+    emitEventPageUpdated(ROOT_PAGE_ID);
   };
-  const createPage = async (item: Partial<Page> = {}, parentId: string) => {
-    const { data } = await api().post('/api/page/create-item', {
-      item,
-      parentId,
-    });
-    const id = getParsedId(data);
-    pullPageInfos().catch(apiErrorHandler);
-    return id;
+  const clearPages = () => {
+    set({ pages: [], pagesLoaded: false, pageFetchError: false });
   };
-  const deletePage = async (id: string) => {
-    await api().post('/api/page/delete-item', {
+  const pullGuestPages = async (id: string) => {
+    const { data } = await api().post('/api/page/get-guest-items', {
       id,
     });
-    const { children, current, parent } = findFlatRelatives(
-      get().pageNavNodes,
-      id
-    );
-    if ([...children, current].find((t) => t.id === get().currentPageId)) {
-      navigate(parent.id === ROOT_PAGE_ID ? '/' : `/${parent.id}`);
+    const pages = PagesSchema.parse(JSON.parse(decode(data.pages)));
+    set({
+      pages,
+      pagesLoaded: true,
+    });
+    emitEventPageUpdated(pages[0]!.id);
+  };
+  const createPage = async (
+    item: Partial<Page> = {},
+    parent: string,
+    noEffects = false
+  ) => {
+    const { data } = await api().post('/api/page/create-item', {
+      item,
+      parent,
+    });
+    const newPage = PageSchema.parse(data);
+    if (!noEffects) {
+      await pullPages();
+      emitEventPageUpdated(parent);
+      navigate(getPageRoute(newPage.id));
     }
-    await pullPageInfos();
+    return newPage.id;
+  };
+  const duplicatePage = async (pageId: string) => {
+    const pages = selectComputedPagesDfs(get());
+    const currentPage = getNodeById(pages, pageId)!;
+    const parentId = currentPage.computed.parent!;
+    const { data } = await api().post('/api/page/duplicate-item', {
+      id: pageId,
+    });
+    const id = getParsedId(data);
+    await pullPages();
+    emitEventPageUpdated(parentId);
+    navigate(getPageRoute(id));
+  };
+  const deletePage = async (pageId: string, noEffects = false) => {
+    await api().post('/api/page/delete-item', {
+      id: pageId,
+    });
+    if (!noEffects) {
+      const pages = selectComputedPagesDfs(get());
+      const currentPage = getNodeById(pages, pageId)!;
+      const parentId = currentPage.computed.parent!;
+      await pullPage(parentId);
+      emitEventPageUpdated(parentId);
+    }
+  };
+  const deletePages = async (ids: string[]) => {
+    if (ids.length === 0) {
+      return;
+    }
+    for (const id of ids) {
+      await deletePage(id, true);
+    }
+    await pullPages();
+    emitEventReloadTree();
   };
   const setCurrentPageId = (currentPageId: string) => {
     set({ currentPageId });
   };
-  const setClipboard = (
-    clipboardPageId: string,
-    clipboardMode: 'copy' | 'cut'
-  ) => {
-    set({ clipboardPageId, clipboardMode });
-  };
-  const calcPageNavNodes = () => {
-    const { pageInfos, currentPageId, pageNavNodes: prevNodes } = get();
-    const pageNavNodes: PageNavNode[] = pageInfos.map((p) => {
-      let opened = false;
-      const prevNode = prevNodes.find((t) => t.id === p.id);
-      if (prevNode) {
-        opened = prevNode.opened;
-      }
-      return {
-        ...p,
-        opened,
-        actived: false,
-      };
-    });
-    const currentNode = pageNavNodes.find((n) => n.id === currentPageId);
-    if (currentNode) {
-      const { parents, current } = findFlatRelatives(
-        pageNavNodes,
-        currentNode.id
-      );
-      [...parents, current].forEach((node) => {
-        node.actived = true;
-        node.opened = true;
-      });
-    }
-    set({
-      pageNavNodes,
-    });
-  };
-  const tooglePageNavNodeOpened = (id: string) => {
-    set((d) => {
-      const node = d.pageNavNodes.find((n) => n.id === id)!;
-      node.opened = !node.opened;
-      if (!node.opened) {
-        // close all children nodes
-        const { children } = findFlatRelatives(d.pageNavNodes, node.id);
-        children.forEach((t) => (t.opened = false));
-      }
-    });
-  };
-  const pullCurrentPage = async () => {
-    set({
-      currentPage: null,
-    });
-    const { currentPageId } = get();
-    if (!currentPageId) {
-      return;
-    }
+  const pullPage = async (id: string) => {
     const { data } = await api().post('/api/page/get-item', {
-      id: currentPageId,
+      id,
     });
-    set({
-      currentPage: PageSchema.parse(data),
+    set((d) => {
+      const page = getNodeById(d.pages, id);
+      if (page) {
+        const newPage = PageSchema.parse(data);
+        if (!isEqual(page, newPage)) {
+          Object.assign(page, newPage);
+        }
+        emitEventPageUpdated(id);
+      }
     });
-  };
-  const cutToPage = async ({
-    from,
-    to,
-    start,
-  }: {
-    from: string;
-    to: string;
-    start: number;
-  }) => {
-    const { data } = await api().post('/api/page/cut-to-page', {
-      from,
-      to,
-      start,
-    });
-    const id = getParsedId(data);
-    setClipboard('', 'cut');
-    navigate(`/${id}`);
-    await pullPageInfos();
-  };
-  const cutToSubpage = async ({ from, to }: { from: string; to: string }) => {
-    const { data } = await api().post('/api/page/cut-to-subpage', {
-      from,
-      to,
-    });
-    const id = getParsedId(data);
-    setClipboard('', 'cut');
-    navigate(`/${id}`);
-    await pullPageInfos();
-  };
-  const copyToPage = async ({
-    from,
-    to,
-    start,
-  }: {
-    from: string;
-    to: string;
-    start: number;
-  }) => {
-    const { data } = await api().post('/api/page/copy-to-page', {
-      from,
-      to,
-      start,
-    });
-    const id = getParsedId(data);
-    setClipboard('', 'copy');
-    navigate(`/${id}`);
-    await pullPageInfos();
-  };
-  const copyToSubpage = async ({ from, to }: { from: string; to: string }) => {
-    const { data } = await api().post('/api/page/copy-to-subpage', {
-      from,
-      to,
-    });
-    const id = getParsedId(data);
-    setClipboard('', 'copy');
-    navigate(`/${id}`);
-    await pullPageInfos();
   };
   const patchPage = async (item: Partial<Page> & { id: string }) => {
-    const { id, ...data } = item;
+    const { id } = item;
     if (!id) {
       return;
     }
-    set((d) => {
-      if (d.currentPage?.id === id) {
-        d.currentPage = {
-          ...d.currentPage,
-          ...data,
-        };
-      }
-      const pageInfo = d.pageInfos.find((t) => t.id === id);
-      if (pageInfo) {
-        const newPageInfo = PageInfoSchema.parse({
-          ...pageInfo,
-          ...item,
-        });
-        Object.assign(pageInfo, newPageInfo);
-      }
-    });
     await api().post('/api/page/patch-item', item);
+    await pullPage(id);
   };
+  const changeId = async ({ from, to }: { from: string; to: string }) => {
+    const { data } = await api().post('/api/page/change-id', {
+      from,
+      to,
+    });
+    const id = getParsedId(data);
+    navigate(`/${id}`);
+    await pullPages();
+  };
+
+  const setPagesLoaded = (pagesLoaded: boolean) => {
+    set({ pagesLoaded });
+  };
+
   return {
     actions: {
-      pullPageInfos,
+      pullPages,
       createPage,
       setCurrentPageId,
-      calcPageNavNodes,
-      tooglePageNavNodeOpened,
-      pullCurrentPage,
+      pullPage,
       deletePage,
-      setClipboard,
-      cutToPage,
-      cutToSubpage,
-      copyToPage,
-      copyToSubpage,
       patchPage,
+      changeId,
+      duplicatePage,
+      deletePages,
+      setPagesLoaded,
+      pullGuestPages,
+      clearPages,
     },
   };
 });
 
-export const selectRootPageNavNode = createSelector(
-  (s: Store) => s.pageNavNodes,
-  (pageNavNodes) => pageNavNodes.find((n) => n.id === ROOT_PAGE_ID)
+export const selectComputedPagesDfs = createSelector(
+  (s: Store) => s.pages,
+  (pages) => {
+    const rootPage = getNodeById(pages, ROOT_PAGE_ID) || pages[0];
+    if (!rootPage) {
+      return [];
+    }
+    // reorder by dfs
+    const orderedPages: ComputedPage[] = [];
+    dfsTraversal(pages, rootPage, (node) => {
+      const ancestorsNodes = getAncestorsNodes(pages, node);
+      const computedPage: ComputedPage = {
+        ...node,
+        computed: {
+          parent: ancestorsNodes[ancestorsNodes.length - 1]?.id,
+          isPublic: [node, ...ancestorsNodes].some(
+            (t) => t.isFolder && t.isPublicFolder
+          ),
+        },
+      };
+      orderedPages.push(computedPage);
+    });
+    return orderedPages;
+  }
 );
 
-export const selectClipboardRelated = createSelector(
-  (s: Store) => s.pageNavNodes,
-  (s: Store) => s.clipboardPageId,
-  (s: Store) => s.clipboardMode,
-  (pageNavNodes, clipboardPageId, clipboardMode) => {
-    if (!pageNavNodes.find((n) => n.id === clipboardPageId)) {
+export const selectNavTreeDatas = createSelector(
+  selectComputedPagesDfs,
+  (pages) => {
+    const data: Record<string, MyTreeItem> = {};
+    pages.forEach((page) => {
+      const node: MyTreeItem = {
+        id: page.id,
+        index: page.id,
+        children: page.children,
+        isFolder: page.isFolder,
+        canMove: true,
+        canRename: false,
+        data: page,
+      };
+      data[node.index] = node;
+    });
+    return data;
+  }
+);
+
+export const selectCurrentPage = createSelector(
+  selectComputedPagesDfs,
+  (s: Store) => s.currentPageId,
+  (pages, currentPageId) => {
+    return getNodeById(pages, currentPageId);
+  }
+);
+
+export const selectCurrentNavTreeItem = createSelector(
+  selectNavTreeDatas,
+  (s: Store) => s.currentPageId,
+  (navTreeDatas, currentPageId) => {
+    return navTreeDatas[currentPageId];
+  }
+);
+export const selectRootNavNode = createSelector(
+  selectComputedPagesDfs,
+  (pages) => pages.find((n) => n.id === ROOT_PAGE_ID) || pages[0]
+);
+
+export const selectContiguousPage = createSelector(
+  (s: Store) => s.currentPageId,
+  selectComputedPagesDfs,
+  (currentPageId, pages) => {
+    const results: {
+      currentPage?: Page;
+      prevPage?: Page;
+      nextPage?: Page;
+    } = {
+      currentPage: undefined,
+      prevPage: undefined,
+      nextPage: undefined,
+    };
+    results.currentPage = getNodeById(pages, currentPageId);
+    if (!results.currentPage) {
+      return results;
+    }
+    const currentIndex = pages.findIndex((t) => t.id === currentPageId);
+
+    return {
+      currentPage: getNodeById(pages, currentPageId),
+      prevPage: pages[currentIndex - 1],
+      nextPage: pages[currentIndex + 1],
+    };
+  }
+);
+
+export const selectFavoritePages = createSelector(
+  selectComputedPagesDfs,
+  (pages) => {
+    return pages.filter((t) => t.isFavorite);
+  }
+);
+
+export const selectPublicFolders = createSelector(
+  selectComputedPagesDfs,
+  (pages) => {
+    return pages.filter((t) => t.isFolder && t.isPublicFolder);
+  }
+);
+
+export const selectCurrentTreeNodeRelated = createSelector(
+  (s: Store) => s.currentPageId,
+  selectComputedPagesDfs,
+  (currentPageId, pages) => {
+    const currentNode = getNodeById(pages, currentPageId);
+    if (currentNode) {
+      return getCurrentTreeNodeRelated(pages, currentNode);
+    } else {
       return null;
     }
-    return {
-      clipboardPageId,
-      clipboardMode,
-      ...findFlatRelatives(pageNavNodes, clipboardPageId),
-    };
   }
 );

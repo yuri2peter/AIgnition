@@ -5,15 +5,12 @@ import { svgIconProps } from './defines';
 import { IconPhoto } from '@tabler/icons-react';
 
 export const image: ICommand = {
-  name: 'image',
+  name: 'Image',
   keyCommand: 'image',
   shortcuts: 'ctrlcmd+k',
   prefix: '![image](',
   suffix: ')',
-  buttonProps: {
-    'aria-label': 'Add image (ctrl + k)',
-    title: 'Add image (ctrl + k)',
-  },
+  title: 'Add image (Ctrl + K)',
   icon: <IconPhoto {...svgIconProps} />,
   execute: (state: ExecuteState, api: TextAreaTextApi) => {
     let newSelectionRange = selectWord({
