@@ -72,7 +72,7 @@ services:
 
 ## 🧰 Maintenance
 
-### Software update
+### Software Update
 
 ```bash
 cd /YOUR_PATH/aignition
