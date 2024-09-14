@@ -132,6 +132,7 @@
     "react-hot-toast": "^2.1.1",
     "react-in-viewport": "^1.0.0-alpha.30",
     "react-markdown": "^9.0.1",
+    "react-medium-image-zoom": "^5.2.9",
     "react-resize-detector": "^9.1.1",
     "react-router-dom": "^6.21.1",
     "react-use": "^17.4.2",

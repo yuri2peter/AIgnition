@@ -1,4 +1,4 @@
-import { COOKIE_NAME, TOKEN_MAX_AGE } from 'src/common/config';
+import { TOKEN_MAX_AGE } from 'src/common/config';
 import { MyContext } from '../types/controller';
 import { nanoid } from 'nanoid';
 import path from 'path';
@@ -37,18 +37,10 @@ export function getTempPasswordHashed() {
 }
 
 export function applyToken(ctx: MyContext, token: string) {
-  ctx.cookies.set(COOKIE_NAME, token, {
-    maxAge: TOKEN_MAX_AGE,
-    httpOnly: true,
-  });
   authMemCache.set(token, ctx.ip, TOKEN_MAX_AGE);
 }
 
 export function removeToken(ctx: MyContext) {
-  ctx.cookies.set(COOKIE_NAME, 'unauthorized', {
-    maxAge: TOKEN_MAX_AGE,
-    httpOnly: true,
-  });
   authMemCache.remove(getCurrentToken(ctx));
 }
 
@@ -61,6 +53,6 @@ export function verifyToken(ctx: MyContext) {
 }
 
 function getCurrentToken(ctx: MyContext) {
-  const token = ctx.cookies.get(COOKIE_NAME) || '';
+  const token = ctx.header.authorization?.replace('Bearer ', '') || '';
   return token;
 }

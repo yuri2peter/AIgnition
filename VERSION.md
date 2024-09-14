@@ -1,3 +1,7 @@
+- v1.1.2
+  - [FEATURE] Zoom picture in markdown content.
+  - [FEATURE] Use auth header instead of cookie.
+  - [REFINE] Better subpage links preview.
 - v1.1.1
   - [FIX] Panel disabled when AI is not set.
   - [REFINE] Refine some details.

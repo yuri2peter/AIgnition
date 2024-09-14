@@ -1,4 +1,5 @@
-import { Box } from '@mantine/core';
+import { Box, Group } from '@mantine/core';
+import { IconChevronRight, IconPointFilled } from '@tabler/icons-react';
 import clsx from 'clsx';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -24,13 +25,22 @@ const SubpageLinks: React.FC<{}> = () => {
         'hover:prose-a:underline'
       )}
     >
-      <ul>
+      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
         {childrenNodes.map((n) => (
           <li key={n.id}>
-            <Link to={getPageRoute(n.id)}>
-              {n.isFolder ? '📁 ' : '📄 '}
-              {getPageTitleFixed(n.title)}
-            </Link>
+            <Group>
+              {n.isFolder ? (
+                <IconChevronRight color="gray" size={16} stroke={1.5} />
+              ) : (
+                <IconPointFilled
+                  color="var(--mantine-color-gray-2)"
+                  size={16}
+                  stroke={1.5}
+                />
+              )}
+
+              <Link to={getPageRoute(n.id)}>{getPageTitleFixed(n.title)}</Link>
+            </Group>
           </li>
         ))}
       </ul>

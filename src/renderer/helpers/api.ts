@@ -1,11 +1,14 @@
 import { notifications } from '@mantine/notifications';
 import axios from 'axios';
 import { get } from 'lodash';
-
-const instance = axios.create({});
+import { AUTH_TOKEN_NAME } from 'src/common/config';
 
 export function api() {
-  return instance;
+  return axios.create({
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem(AUTH_TOKEN_NAME)}`,
+    },
+  });
 }
 
 export function apiErrorHandler(error: any) {

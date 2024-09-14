@@ -16,6 +16,7 @@ import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import 'mantine-contextmenu/styles.css';
 import 'react-complex-tree/lib/style-modern.css';
+import 'react-medium-image-zoom/dist/styles.css';
 import './styles/main.css';
 import './styles/prism-highlight.css';
 import React from 'react';

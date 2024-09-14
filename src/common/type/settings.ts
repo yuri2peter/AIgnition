@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { zodSafeBoolean, zodSafeString, zodSafeType } from '../utils/type';
 
 export const GeneralSettingsSchema = z.object({
-  siteName: zodSafeString('Aignition'),
+  siteName: zodSafeString('AIgnition'),
   siteLogo: zodSafeString(),
   defaultPublicFolder: zodSafeString(), // redirect to this folder when guest access home
   proxyUrl: zodSafeString(),
@@ -48,7 +48,7 @@ export type Settings = z.infer<typeof SettingsSchema>;
 export const NonSensitiveSettingsSchema = z.object({
   general: zodSafeType(
     z.object({
-      siteName: zodSafeString('Aignition'),
+      siteName: zodSafeString('AIgnition'),
       siteLogo: zodSafeString(),
       defaultPublicFolder: zodSafeString(),
     })

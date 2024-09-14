@@ -1,8 +1,9 @@
 {
-  "version": "1.1.1",
-  "releaseDate": "2024-09-14",
+  "version": "1.1.2",
+  "releaseDate": "2024-09-15",
   "updateDetails": [
-    "[FIX] Panel disabled when AI is not set.",
-    "[REFINE] Refine some details."
+    "[FEATURE] Use auth header instead of cookie.",
+    "[FEATURE] Zoom picture in markdown content.",
+    "[REFINE] Better subpage links preview."
   ]
 }

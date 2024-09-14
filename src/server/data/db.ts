@@ -34,7 +34,7 @@ export function getDefaultRootPage() {
     id: ROOT_PAGE_ID,
     title: 'Welcome',
     isFolder: true,
-    content: `# 😺Welcome
+    content: `# 😺 Welcome
 
 ![image](https://github.com/yuri2peter/picx-images-hosting/raw/master/logo_banner.2h89fgamei.webp)
 
@@ -48,7 +48,7 @@ export function getDefaultRootPage() {
 
 ## 🚀 Quick Start
 
-See more in the  [Documentation](https://github.com/yuri2peter/AIgnition).`,
+See more in the  [Documentation](https://github.com/yuri2peter/AIgnition#readme).`,
   };
   return PageSchema.parse(defaultRootPageData);
 }

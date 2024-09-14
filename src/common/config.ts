@@ -61,5 +61,5 @@ export const OPEN_CHII_AFTER_WEB_DEV_START =
   false && USE_CHII && IS_DEV && IS_WIN;
 
 // auth
-export const COOKIE_NAME = 'auth_token';
+export const AUTH_TOKEN_NAME = 'auth_token';
 export const TOKEN_MAX_AGE = 7 * 24 * 3600 * 1000; // TOKEN过期时间为7天

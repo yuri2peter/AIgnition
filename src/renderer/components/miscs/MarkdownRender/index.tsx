@@ -3,6 +3,7 @@ import React from 'react';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import rehypeExternalLinks from 'rehype-external-links';
 import remarkGfm from 'remark-gfm';
+import Zoom from 'react-medium-image-zoom';
 import clsx from 'clsx';
 import themeBase from './base.module.css';
 import themeTiny from './tiny.module.css';
@@ -23,13 +24,15 @@ const components: Partial<Components> = {
   },
   img: ({ ref, ...props }) => {
     return (
-      <Image
-        {...props}
-        w="auto"
-        fit="contain"
-        style={{ borderRadius: '0.375rem' }}
-        fallbackSrc="/assets/icons/image_error.png"
-      />
+      <Zoom>
+        <Image
+          {...props}
+          w="auto"
+          fit="contain"
+          style={{ borderRadius: '0.375rem' }}
+          fallbackSrc="/assets/icons/image_error.png"
+        />
+      </Zoom>
     );
   },
   pre: ({ className, children }) => {

@@ -3,6 +3,7 @@ import { createZustandStore } from 'src/common/libs/createZustand';
 import { api, apiErrorHandler } from '../helpers/api';
 import { useMainLayoutStore } from './useMainLayoutStore';
 import { useLeftsideStore } from './useLeftsideStore';
+import { AUTH_TOKEN_NAME } from 'src/common/config';
 
 interface Store {
   loggedIn: boolean;
@@ -32,7 +33,9 @@ export const useUserStore = createZustandStore(defaultStore, (set) => {
 
 export async function loginWithPasswordHashed(passwordHashed: string) {
   try {
-    await api().post('/api/auth/login-password', {
+    const {
+      data: { token },
+    } = await api().post('/api/auth/login-password', {
       passwordHashed,
     });
     notifications.show({
@@ -40,6 +43,7 @@ export async function loginWithPasswordHashed(passwordHashed: string) {
       color: 'green',
     });
     const { setLoggedIn } = useUserStore.getState().actions;
+    localStorage.setItem(AUTH_TOKEN_NAME, token);
     setLoggedIn(true);
   } catch (error) {
     return apiErrorHandler(error);
@@ -81,6 +85,7 @@ export async function logout() {
   try {
     await api().post('/api/auth/logout');
     const { setLoggedIn } = useUserStore.getState().actions;
+    localStorage.removeItem(AUTH_TOKEN_NAME);
     setLoggedIn(false);
   } catch (error) {
     return apiErrorHandler(error);
@@ -104,11 +109,12 @@ export async function logoutOtherDevices() {
 export async function tryRenewTokenIfLoggedIn() {
   try {
     const {
-      data: { isNewInstance },
+      data: { isNewInstance, token },
     } = await api().post('/api/auth/token-renew');
     const { setLoggedIn, setIsNewInstance } = useUserStore.getState().actions;
     const { setShowLeft } = useMainLayoutStore.getState().actions;
     const { setActivedSectionId } = useLeftsideStore.getState().actions;
+    localStorage.setItem(AUTH_TOKEN_NAME, token);
     setLoggedIn(true);
     setIsNewInstance(isNewInstance);
     if (isNewInstance) {

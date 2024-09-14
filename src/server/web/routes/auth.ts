@@ -28,7 +28,7 @@ const auth: Controller = (router) => {
     const token = generateAdminToken();
     applyToken(ctx, token);
     fileLog(`User ${ctx.request.ip} logged in.`, 'auth');
-    ctx.body = { ok: 1 };
+    ctx.body = { token };
   });
 
   router.post('/api/auth/token-renew', async (ctx) => {
@@ -40,7 +40,7 @@ const auth: Controller = (router) => {
     const token = generateAdminToken();
     applyToken(ctx, token);
     fileLog(`User ${ctx.request.ip} renewed token.`, 'auth');
-    ctx.body = { ok: 1, isNewInstance };
+    ctx.body = { token, isNewInstance };
   });
 
   router.post('/api/auth/logout', async (ctx) => {
