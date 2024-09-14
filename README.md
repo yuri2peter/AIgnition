@@ -18,6 +18,8 @@
 
 **AIgnition** is an intuitive, open-source note-taking web app, powered by AI to simplify and enhance your note-taking experience.
 
+![multi-mockup](https://github.com/yuri2peter/picx-images-hosting/raw/master/multi-mockup.5c0xn7y36a.webp)
+
 ## ✨ Features
 
 ### Editor
@@ -55,6 +57,7 @@
 Docker compose is the simplest way to deploy AIgnition.
 
 ```yml
+# https://hub.docker.com/repository/docker/yuri2/aignition/general
 # /YOUR_PATH/aignition/docker-compose.yml
 version: '3.8'
 services:

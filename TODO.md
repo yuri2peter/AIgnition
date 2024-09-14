@@ -1,3 +1,3 @@
 - search keywords highlight
-- tutorial
+- user guide
 - better doc

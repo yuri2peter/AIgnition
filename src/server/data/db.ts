@@ -34,9 +34,9 @@ export function getDefaultRootPage() {
     id: ROOT_PAGE_ID,
     title: 'Welcome',
     isFolder: true,
-    content: `# 😺 Welcome
+    content: `# 😺Welcome
 
-![image](https://github.com/yuri2peter/picx-images-hosting/raw/master/logo_banner.2h89fgamei.webp)
+![image](/assets/images/logo_banner.png)
 
 <h3 align="center">
 ---- Notes that spark your creativity.
@@ -46,9 +46,12 @@ export function getDefaultRootPage() {
 
 **AIgnition** is an intuitive, open-source note-taking web app, powered by AI to simplify and enhance your note-taking experience.
 
-## 🚀 Quick Start
+ ![multi-mockup](/assets/images/logo_multi_mockup.png) 
 
-See more in the  [Documentation](https://github.com/yuri2peter/AIgnition#readme).`,
+## 📖 Learn more
+
+- [User Guide](user-guide)
+- [Github Project](https://github.com/yuri2peter/AIgnition#readme)`,
   };
   return PageSchema.parse(defaultRootPageData);
 }

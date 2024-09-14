@@ -145,6 +145,7 @@ const Settings = () => {
                 href="https://giscus.app/"
                 c="blue"
                 underline="hover"
+                target="_blank"
                 style={{
                   fontSize: 'inherit',
                 }}
@@ -427,6 +428,7 @@ const Settings = () => {
           </Stack>
           <Group
             style={{
+              zIndex: 2,
               position: 'sticky',
               bottom: 0,
               left: 0,

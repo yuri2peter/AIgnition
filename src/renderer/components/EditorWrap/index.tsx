@@ -23,7 +23,6 @@ const EditorWrap: React.FC<
       className: 'mx-auto py-8',
     };
   }, []);
-
   const previewType = isLargeScreen ? 'live' : 'preview';
 
   return (

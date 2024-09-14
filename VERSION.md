@@ -1,3 +1,6 @@
+- v1.2.1
+  - [FIX] Custom route function reporting error.
+  - [REFINE] Refine some details.
 - v1.2.0
   - [FIX] AI engine not working.
 - v1.1.2

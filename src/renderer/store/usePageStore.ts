@@ -140,12 +140,11 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     await pullPage(id);
   };
   const changeId = async ({ from, to }: { from: string; to: string }) => {
-    const { data } = await api().post('/api/page/change-id', {
+    await api().post('/api/page/change-id', {
       from,
       to,
     });
-    const id = getParsedId(data);
-    navigate(`/${id}`);
+    navigate(getPageRoute(to));
     await pullPages();
   };
 

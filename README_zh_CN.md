@@ -18,6 +18,8 @@
 
 **AIgnition** 是一款直观、开源的笔记应用，由 AI 提供支持，旨在简化和增强您的笔记体验。
 
+![multi-mockup](https://github.com/yuri2peter/picx-images-hosting/raw/master/multi-mockup.5c0xn7y36a.webp)
+
 ## ✨ 功能
 
 ### 编辑器
@@ -55,6 +57,7 @@
 Docker compose 是部署 AIgnition 的最简单方法。
 
 ```yml
+# https://hub.docker.com/repository/docker/yuri2/aignition/general
 # /YOUR_PATH/aignition/docker-compose.yml
 version: '3.8'
 services:

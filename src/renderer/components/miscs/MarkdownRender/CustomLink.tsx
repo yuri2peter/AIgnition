@@ -42,7 +42,7 @@ const CustomLink: React.FC<React.AnchorHTMLAttributes<HTMLAnchorElement>> = ({
     );
   }
   // intranet sites
-  if (href?.startsWith('/')) {
+  if (href && !href.startsWith('http')) {
     return (
       <Link
         className={clsx(className, themeBase.customrLink)}
