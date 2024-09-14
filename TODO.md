@@ -1,4 +1,3 @@
 - search keywords highlight
 - tutorial
-- version update
-- doc
+- better doc

@@ -13,7 +13,7 @@ const pathContextDistEnv = path.resolve(pathContextDist, '.env');
 const pathTest = path.resolve(__dirname, 'test');
 
 async function main() {
-  console.log('打包docker镜像');
+  console.log('Building docker image...');
   // 准备context
   await fs.emptyDir(pathContextDist);
   await fs.copy(pathDist, pathContextDist);
@@ -23,7 +23,7 @@ async function main() {
   await executeCommand(buildCommand, pathContext)
     .then(console.log)
     .catch(console.error);
-  console.log(`打包完成，测试目录：${pathTest}`);
+  console.log(`Build completed, test directory: ${pathTest}`);
 }
 
 main();

@@ -5,53 +5,53 @@ import { USE_ELECTRON } from '../src/common/config';
 const scripts = USE_ELECTRON
   ? [
       {
-        name: '开发模式运行',
+        name: 'Run in development mode',
         value: 'start:electron',
       },
       {
-        name: '生产模式运行',
+        name: 'Run in production mode',
         value: 'prod:electron',
       },
       {
-        name: '语法检查',
+        name: 'Syntax check',
         value: 'lint',
       },
       {
-        name: '打包electron应用',
+        name: 'Package electron application',
         value: 'package:electron',
       },
       {
-        name: '打包当前项目文件',
+        name: 'Package current project files',
         value: 'package:project',
       },
     ]
   : [
       {
-        name: '开发模式运行',
+        name: 'Run in development mode',
         value: 'start:node',
       },
       {
-        name: '生产模式运行',
+        name: 'Run in production mode',
         value: 'prod:node',
       },
       {
-        name: '语法检查',
+        name: 'Syntax check',
         value: 'lint',
       },
       {
-        name: '打包常规应用',
+        name: 'Package regular application',
         value: 'package:regular',
       },
       {
-        name: '打包docker镜像',
+        name: 'Package docker image',
         value: 'package:docker',
       },
       {
-        name: '打包便携式nodejs应用',
+        name: 'Package portable nodejs application',
         value: 'package:protable',
       },
       {
-        name: '打包当前项目文件',
+        name: 'Package current project files',
         value: 'package:project',
       },
     ];

@@ -1,4 +1,4 @@
-- v1.1.pre
-  - 细节优化
+- v1.1.0
+  - Refine some details
 - v1.0.0
-  - 第一个正式版
+  - First official release

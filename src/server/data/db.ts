@@ -48,7 +48,7 @@ export function getDefaultRootPage() {
 
 ## 🚀 Quick Start
 
-See more in the  [Documentation](https://github.com/yuri2peter/AIgnition).`,
+See more in the  [Documentation](https://github.com/yuri2peter/AIgnition?tab=readme-ov-file).`,
   };
   return PageSchema.parse(defaultRootPageData);
 }
