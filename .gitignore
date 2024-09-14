@@ -18,6 +18,7 @@ Thumbs.db
 # project
 /dist
 /package/regular/release
+/package/docker/context/dist
 /package/docker/test/runtime
 /package/protable/release
 /package/protable/template

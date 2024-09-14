@@ -1,3 +1,6 @@
+- v1.1.1
+  - [FIX] Panel disabled when AI is not set.
+  - [REFINE] Refine some details.
 - v1.1.0
   - Refine some details
 - v1.0.0

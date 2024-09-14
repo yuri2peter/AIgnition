@@ -4,6 +4,7 @@ import { executeCommand } from '../../dev/utils/miscs';
 import versionInfo from '../../src/common/version.json';
 
 const buildCommand = `docker build -f ./Dockerfile -t yuri2/aignition:${versionInfo.version} ./`;
+const pushCommand = `docker tag yuri2/aignition:${versionInfo.version} yuri2/aignition:latest && docker push yuri2/aignition:${versionInfo.version} && docker push yuri2/aignition:latest`;
 
 const pathDist = path.resolve(__dirname, '../../dist');
 const pathContext = path.resolve(__dirname, 'context');
@@ -24,6 +25,9 @@ async function main() {
     .then(console.log)
     .catch(console.error);
   console.log(`Build completed, test directory: ${pathTest}`);
+  console.log('Pushing docker image...');
+  await executeCommand(pushCommand, pathContext);
+  console.log(`Image yuri2/aignition:${versionInfo.version} has been pushed.`);
 }
 
 main();

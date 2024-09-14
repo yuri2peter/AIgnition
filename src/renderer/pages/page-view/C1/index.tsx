@@ -87,7 +87,6 @@ const C1: React.FC<{}> = () => {
           <Tooltip {...tooltipProps} label="Quick Notes">
             <ActionIcon
               {...getIconProps(sid === 'quickNotes')}
-              disabled={!aiEnabled}
               onClick={() => {
                 setShowLeft(true);
                 setActivedSectionId('quickNotes');
@@ -99,7 +98,6 @@ const C1: React.FC<{}> = () => {
           <Tooltip {...tooltipProps} label="Web Widgets">
             <ActionIcon
               {...getIconProps(sid === 'webWidgets')}
-              disabled={!aiEnabled}
               onClick={() => {
                 setShowLeft(true);
                 setActivedSectionId('webWidgets');
