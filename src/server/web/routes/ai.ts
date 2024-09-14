@@ -161,35 +161,6 @@ The command is enclosed in <USERCOMMAND></USERCOMMAND> XML tags:
 };
 export default miscs;
 
-/*
-  await fetchEventSource('/api/ai/chat', {
-    signal,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      prompt,
-      stream: true,
-      history,
-    }),
-    onmessage: (ev) => {
-      const {
-        data: { chunkText },
-      } = z
-        .object({
-          data: z.object({
-            totalText: zodSafeString(),
-            chunkText: zodSafeString(),
-          }),
-        })
-        .parse(JSON.parse(ev.data));
-      onUpdate?.(chunkText);
-    },
-    onerror: console.error,
-  });
-*/
-
 function editorRewriteTotalTextTagMover(text: string) {
   let str = text.trim();
   if ('<GENERATED>'.startsWith(str)) {

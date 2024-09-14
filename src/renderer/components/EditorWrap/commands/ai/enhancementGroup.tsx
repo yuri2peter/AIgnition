@@ -3,11 +3,11 @@ import { ICommand, group } from 'src/renderer/components/ReactMD/commands';
 import { svgIconProps } from 'src/renderer/components/ReactMD/commands/defines';
 import { z } from 'zod';
 import { zodSafeString } from 'src/common/utils/type';
-import { fetchEventSource } from 'src/renderer/helpers/fetchEventSource';
 import { customEnhancement } from './customEnhancement';
 import { alertSelectionIsEmpty } from '../../utils';
 import { GeneratingText } from './defines';
 import { customContinueWriting } from './autocomplete';
+import { eventApi } from 'src/renderer/helpers/api';
 
 const enhancementCommands = [
   {
@@ -87,19 +87,16 @@ function enhancementCommandFactory({
         }
       };
       insertText(GeneratingText);
-      await fetchEventSource('/api/ai/edit-replace', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      await eventApi(
+        '/api/ai/edit-replace',
+        {
           stream: true,
           documentPrefix: text.slice(0, start),
           documentSuffix: text.slice(end),
           documentSelection: selectedText,
           command: commandPrompt,
-        }),
-        onmessage: (ev) => {
+        },
+        (ev) => {
           const {
             data: { totalText },
           } = z
@@ -111,9 +108,8 @@ function enhancementCommandFactory({
             })
             .parse(JSON.parse(ev.data));
           insertText(totalText);
-        },
-        onerror: console.error,
-      });
+        }
+      );
       ctx?.historyManager?.cancelIgnore();
     },
   };

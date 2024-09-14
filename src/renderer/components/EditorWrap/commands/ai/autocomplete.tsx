@@ -7,12 +7,12 @@ import {
   TextAreaTextApi,
 } from 'src/renderer/components/ReactMD';
 import { svgIconProps } from 'src/renderer/components/ReactMD/commands/defines';
-import { fetchEventSource } from 'src/renderer/helpers/fetchEventSource';
 import { modals } from '@mantine/modals';
 import { z } from 'zod';
 import { GeneratingText } from './defines';
 import { useInputState } from '@mantine/hooks';
 import { Button, TextInput } from '@mantine/core';
+import { eventApi } from 'src/renderer/helpers/api';
 
 export const continueWriting: ICommand = {
   name: 'continueWriting',
@@ -75,18 +75,15 @@ async function handleInsert({
     }
   };
   insertText(GeneratingText);
-  await fetchEventSource('/api/ai/edit-insert', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+  await eventApi(
+    '/api/ai/edit-insert',
+    {
       stream: true,
       documentPrefix: text.slice(0, insertIndex),
       documentSuffix: text.slice(insertIndex),
       command,
-    }),
-    onmessage: (ev) => {
+    },
+    (ev) => {
       const {
         data: { totalText },
       } = z
@@ -98,9 +95,8 @@ async function handleInsert({
         })
         .parse(JSON.parse(ev.data));
       insertText(totalText);
-    },
-    onerror: console.error,
-  });
+    }
+  );
   ctx?.historyManager?.cancelIgnore();
 }
 

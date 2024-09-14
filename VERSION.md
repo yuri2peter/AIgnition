@@ -1,3 +1,5 @@
+- v1.2.0
+  - [FIX] AI engine not working.
 - v1.1.2
   - [FEATURE] Zoom picture in markdown content.
   - [FEATURE] Use auth header instead of cookie.

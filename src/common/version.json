@@ -1,9 +1,5 @@
 {
-  "version": "1.1.2",
+  "version": "1.2.0",
   "releaseDate": "2024-09-15",
-  "updateDetails": [
-    "[FEATURE] Use auth header instead of cookie.",
-    "[FEATURE] Zoom picture in markdown content.",
-    "[REFINE] Better subpage links preview."
-  ]
+  "updateDetails": ["[FIX] AI engine not working."]
 }

@@ -1,10 +1,10 @@
 import { createZustandStore } from 'src/common/libs/createZustand';
 import { ChatHistory } from 'src/common/type/ai';
-import { fetchEventSource } from '../helpers/fetchEventSource';
 import { z } from 'zod';
 import { zodSafeString } from 'src/common/utils/type';
 import { selectCurrentPage, usePageStore } from './usePageStore';
 import { eventEmitter } from '../hooks/useEvent';
+import { eventApi } from '../helpers/api';
 
 interface Store {
   usePageContent: boolean;
@@ -120,18 +120,10 @@ async function query({
   signal?: AbortSignal;
   onUpdate?: (text: string) => void;
 }) {
-  await fetchEventSource('/api/ai/chat', {
-    signal,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      prompt,
-      stream: true,
-      history,
-    }),
-    onmessage: (ev) => {
+  await eventApi(
+    '/api/ai/chat',
+    { prompt, stream: true, history },
+    (ev) => {
       const {
         data: { chunkText },
       } = z
@@ -144,6 +136,6 @@ async function query({
         .parse(JSON.parse(ev.data));
       onUpdate?.(chunkText);
     },
-    onerror: console.error,
-  });
+    signal
+  );
 }

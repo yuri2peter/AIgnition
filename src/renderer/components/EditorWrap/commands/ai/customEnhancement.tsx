@@ -4,10 +4,10 @@ import { useInputState } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
 import { zodSafeString } from 'src/common/utils/type';
 import { ICommand } from 'src/renderer/components/ReactMD';
-import { fetchEventSource } from 'src/renderer/helpers/fetchEventSource';
 import { z } from 'zod';
 import { alertSelectionIsEmpty } from '../../utils';
 import { GeneratingText } from './defines';
+import { eventApi } from 'src/renderer/helpers/api';
 
 export const customEnhancement: ICommand = {
   name: 'More rewrite style...',
@@ -44,19 +44,16 @@ export const customEnhancement: ICommand = {
               }
             };
             insertText(GeneratingText);
-            await fetchEventSource('/api/ai/edit-replace', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
+            await eventApi(
+              '/api/ai/edit-replace',
+              {
                 stream: true,
                 documentPrefix: text.slice(0, start),
                 documentSuffix: text.slice(end),
                 documentSelection: selectedText,
                 command: commandPrompt,
-              }),
-              onmessage: (ev) => {
+              },
+              (ev) => {
                 const {
                   data: { totalText },
                 } = z
@@ -68,9 +65,8 @@ export const customEnhancement: ICommand = {
                   })
                   .parse(JSON.parse(ev.data));
                 insertText(totalText);
-              },
-              onerror: console.error,
-            });
+              }
+            );
             ctx?.historyManager?.cancelIgnore();
           }}
         />
