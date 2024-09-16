@@ -1,3 +1,6 @@
+- v1.3.0
+  - [FEATURE] User guide.
+  - [REFINE] Removed unused package options.
 - v1.2.1
   - [FIX] Custom route function reporting error.
   - [REFINE] Refine some details.

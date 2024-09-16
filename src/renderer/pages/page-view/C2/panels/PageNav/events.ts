@@ -53,13 +53,13 @@ export function useListenEventFocusPage(cb: (pageId: string) => void) {
   return useEventListener(EVENT_FOCUS_PAGE, cb);
 }
 
-export function useListenEventPageUpdated(cb: (pageId: string) => void) {
+export function useListenEventPageUpdated(cb: (pageIds: string[]) => void) {
   return useEventListener(EVENT_PAGE_UPDATED, cb);
 }
 
-export function emitEventPageUpdated(pageId: string) {
+export function emitEventPageUpdated(pageIds: string[]) {
   setTimeout(() => {
-    eventEmitter.emit(EVENT_PAGE_UPDATED, pageId);
+    eventEmitter.emit(EVENT_PAGE_UPDATED, pageIds);
   }, 0);
 }
 

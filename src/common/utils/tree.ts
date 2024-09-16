@@ -70,6 +70,7 @@ export function changeNodeId<T extends BasicTreeNode>(
   node.id = newId;
 }
 
+// delete node and its descendants, returns the new tree
 export function deleteNode<T extends BasicTreeNode>(tree: T[], node: T) {
   const parent = getParentNode(tree, node);
   const descendantsNodes = getDescendantsNodes(tree, node);

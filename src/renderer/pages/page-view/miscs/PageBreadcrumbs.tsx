@@ -21,7 +21,7 @@ const PageBreadcrumbs: React.FC<{}> = () => {
       separator="/"
       separatorMargin="md"
       my={12}
-      style={{ flexWrap: 'wrap' }}
+      style={{ flexWrap: 'wrap', rowGap: '0.5em' }}
     >
       {currentTreeNodeRelated.ancestorsNodes.map((item) => (
         <Anchor to={getPageRoute(item.id)} key={item.id} component={Link}>

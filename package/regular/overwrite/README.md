@@ -1,4 +1,4 @@
-# 启动说明
+# Quick Start
 
 ## NodeJS
 
@@ -6,7 +6,7 @@
 node ./dist/server/main.js
 ```
 
-或：
+Or
 
 ```bash
 sh start.sh

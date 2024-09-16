@@ -375,7 +375,7 @@ const Settings = () => {
                         'gpt-4o-mini',
                         'gpt-4o',
                         'gpt-4-turbo',
-                        '"gpt-3.5-turbo',
+                        'gpt-3.5-turbo',
                       ]}
                       key={form.key('ai.openaiModel')}
                       {...form.getInputProps('ai.openaiModel')}

@@ -23,6 +23,7 @@ import {
 import db from 'src/server/data/db';
 import { verifyToken } from '../helpers/auth';
 import dayjs from 'dayjs';
+import { recreateUserGuide } from '../helpers/userGuide';
 
 const miscs: Controller = (router) => {
   router.all('/api/miscs/get-server-ip-info', async (ctx) => {
@@ -158,6 +159,12 @@ const miscs: Controller = (router) => {
     } finally {
       usingTempDir = false;
     }
+  });
+
+  router.post('/api/miscs/recreate-user-guide', async (ctx) => {
+    recreateUserGuide(db().get());
+    db().save();
+    ctx.body = { ok: 1 };
   });
 };
 export default miscs;

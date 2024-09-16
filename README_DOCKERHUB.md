@@ -12,6 +12,7 @@
 - 💡 Introduction
 - 🔮 Features
 - 🚀 Deployment
+- 📘 User Guide
 - 🧰 Maintenance
 - ❓ FAQ
 - 🙏 Acknowledgement
@@ -74,6 +75,10 @@ services:
   ports:
     - 3000:3000
 ```
+
+## 📘 User Guide
+
+Please visit the [User Guide](https://github.com/yuri2peter/AIgnition/blob/main/assets/server/📘%20AIgnition%20User%20Guide/1.%20🎉%20Quick%20Start/1.1.%20⚙%EF%B8%8F%20Basic%20Setups.md) for more details.
 
 ## 🧰 Maintenance
 

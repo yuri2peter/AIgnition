@@ -49,7 +49,7 @@ async function handleInsert({
   state,
   api,
   ctx,
-  command = 'Continue writing the text from the current cursor position while maintaining the context and tone of the existing text.',
+  command = 'Continue writing the text from the current cursor position while maintaining the context and tone of the existing text. Max-Length: 50 words. Could be incomplete.',
 }: {
   state: ExecuteState;
   api: TextAreaTextApi;

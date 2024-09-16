@@ -15,7 +15,7 @@ const pathReleaseOutputDistRuntime = path.resolve(
 const pathOverwrite = path.resolve(__dirname, 'overwrite');
 
 async function main() {
-  console.log('打包常规node应用');
+  console.log('Package regular node applications');
   // 准备目录
   await fs.ensureDir(pathRelease);
   await fs.emptyDir(pathRelease);
@@ -29,9 +29,9 @@ async function main() {
   // 拷贝overwrite
   await fs.copy(pathOverwrite, pathReleaseOutput);
   // 压缩
-  console.log('正在生成压缩包');
+  console.log('Generating compressed package...');
   await zip(pathReleaseOutput, pathArchive);
-  console.log(`打包完成，目录：${pathRelease}`);
+  console.log(`Packaging complete, directory: ${pathRelease}`);
 }
 
 main();

@@ -9,6 +9,7 @@ import { clearLinkIconCache } from 'src/renderer/components/miscs/LinkIconPrevie
 import { openImportFromBrowserFavoritesModalModal } from './ImportFromBrowserFavorites';
 import { z } from 'zod';
 import { openImportFromArchiveModal } from './ImportFromArchive';
+import { usePageStore } from 'src/renderer/store/usePageStore';
 
 const buttonProps = {
   variant: 'light',
@@ -36,6 +37,28 @@ const SectionData: React.FC<{}> = () => {
         </Button>
         <Button {...buttonProps} onClick={openImportFromJotwayModal}>
           From jotway v1.3
+        </Button>
+      </Stack>
+      <Stack>
+        <Text fw={'bold'}>User guide</Text>
+        <Button
+          {...buttonProps}
+          onClick={async () => {
+            try {
+              await api().post('/api/miscs/recreate-user-guide');
+              await usePageStore.getState().actions.pullPages();
+              navigate('/aignition-user-guide');
+              notifications.show({
+                title: 'Action performed',
+                message: 'User guide recreated successfully',
+                color: 'green',
+              });
+            } catch (error) {
+              apiErrorHandler(error);
+            }
+          }}
+        >
+          Recreate user guide
         </Button>
       </Stack>
       <Stack>
@@ -67,18 +90,6 @@ const SectionData: React.FC<{}> = () => {
           {...buttonProps}
           onClick={() => {
             clearLinkIconCache();
-            notifications.show({
-              title: 'Action performed',
-              message: 'Local link icon cache cleared successfully',
-              color: 'green',
-            });
-          }}
-        >
-          Clear local link icon cache
-        </Button>
-        <Button
-          {...buttonProps}
-          onClick={() => {
             api()
               .post('/api/miscs/remove-parse-link-icon')
               .then(() => {
@@ -91,7 +102,7 @@ const SectionData: React.FC<{}> = () => {
               .catch(apiErrorHandler);
           }}
         >
-          Clear server link icon cache
+          Clear link icon cache
         </Button>
       </Stack>
       <Stack>

@@ -15,12 +15,12 @@ const pathTest = path.resolve(__dirname, 'test');
 
 async function main() {
   console.log('Building docker image...');
-  // 准备context
+  // prepare context
   await fs.emptyDir(pathContextDist);
   await fs.copy(pathDist, pathContextDist);
   await fs.emptyDir(pathContextDistRuntime);
   await fs.writeFile(pathContextDistEnv, '');
-  // 打包镜像
+  // packaging docker image
   await executeCommand(buildCommand, pathContext)
     .then(console.log)
     .catch(console.error);

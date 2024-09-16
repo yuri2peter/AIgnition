@@ -88,8 +88,8 @@ const MainNavTree: React.FC<{}> = () => {
     [dataProvider]
   );
 
-  useListenEventPageUpdated((pageId: string) => {
-    dataProvider.emitDidChangeTreeData([pageId]);
+  useListenEventPageUpdated((pageIds: string[]) => {
+    dataProvider.emitDidChangeTreeData(pageIds);
   });
 
   useEffect(() => {
@@ -209,7 +209,7 @@ const MainNavTree: React.FC<{}> = () => {
             ref={refTree}
             treeId={TREE_ID}
             rootItem={rootPageId}
-            treeLabel="Tree Example"
+            treeLabel="Tree Pages"
           />
         ) : null}
       </UncontrolledTreeEnvironment>

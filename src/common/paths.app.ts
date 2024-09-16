@@ -18,6 +18,10 @@ export const runtimeLogsPath = path.resolve(runtimePath, 'logs');
 export const runtimeServerLogPath = path.resolve(runtimeLogsPath, 'server.log');
 export const rendererPath = path.resolve(AppPath, 'renderer');
 export const serverPath = path.resolve(AppPath, 'server');
+export const userGuidePath = path.resolve(
+  serverPath,
+  'assets/📘 AIgnition User Guide'
+);
 export const rendererIndexPath = path.resolve(rendererPath, 'index.html');
 export const preloadPath = path.resolve(serverPath, 'preload.js');
 export const serverAssetsIconPath = path.resolve(

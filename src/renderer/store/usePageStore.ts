@@ -46,7 +46,7 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
       pages,
       pagesLoaded: true,
     });
-    emitEventPageUpdated(ROOT_PAGE_ID);
+    emitEventPageUpdated(pages.map((t) => t.id));
   };
   const clearPages = () => {
     set({ pages: [], pagesLoaded: false, pageFetchError: false });
@@ -60,7 +60,7 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
       pages,
       pagesLoaded: true,
     });
-    emitEventPageUpdated(pages[0]!.id);
+    emitEventPageUpdated(pages.map((t) => t.id));
   };
   const createPage = async (
     item: Partial<Page> = {},
@@ -74,7 +74,7 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     const newPage = PageSchema.parse(data);
     if (!noEffects) {
       await pullPages();
-      emitEventPageUpdated(parent);
+      emitEventPageUpdated([parent]);
       navigate(getPageRoute(newPage.id));
     }
     return newPage.id;
@@ -88,7 +88,7 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     });
     const id = getParsedId(data);
     await pullPages();
-    emitEventPageUpdated(parentId);
+    emitEventPageUpdated([parentId]);
     navigate(getPageRoute(id));
   };
   const deletePage = async (pageId: string, noEffects = false) => {
@@ -100,7 +100,7 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
       const currentPage = getNodeById(pages, pageId)!;
       const parentId = currentPage.computed.parent!;
       await pullPage(parentId);
-      emitEventPageUpdated(parentId);
+      emitEventPageUpdated([parentId]);
     }
   };
   const deletePages = async (ids: string[]) => {
@@ -127,7 +127,7 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
         if (!isEqual(page, newPage)) {
           Object.assign(page, newPage);
         }
-        emitEventPageUpdated(id);
+        emitEventPageUpdated([id]);
       }
     });
   };

@@ -4,6 +4,7 @@ import { runtimeDataPath } from 'src/common/paths.app';
 import { DataSchema, defaultValue } from 'src/common/type/data';
 import { Page, PageSchema, ROOT_PAGE_ID } from 'src/common/type/page';
 import { consoleLog } from 'src/common/utils/dev';
+import { recreateUserGuide } from '../web/helpers/userGuide';
 
 const dbInstance = new JsonDb({
   encode: true,
@@ -21,6 +22,7 @@ const dbInstance = new JsonDb({
     // root page must exist
     if (!data.pages.find((t) => t.id === ROOT_PAGE_ID)) {
       data.pages.push(getDefaultRootPage());
+      recreateUserGuide(data);
     }
   },
 });
@@ -32,7 +34,7 @@ export default function db() {
 export function getDefaultRootPage() {
   const defaultRootPageData: Partial<Page> = {
     id: ROOT_PAGE_ID,
-    title: 'Welcome',
+    title: '😺 Welcome',
     isFolder: true,
     content: `# 😺Welcome
 
@@ -46,12 +48,19 @@ export function getDefaultRootPage() {
 
 **AIgnition** is an intuitive, open-source note-taking web app, powered by AI to simplify and enhance your note-taking experience.
 
- ![multi-mockup](/assets/images/logo_multi_mockup.png) 
+ ![multi-mockup](/assets/images/logo_multi_mockup.png)
 
-## 📖 Learn more
+## 😉 Support the Project
 
-- [User Guide](user-guide)
-- [Github Project](https://github.com/yuri2peter/AIgnition#readme)`,
+[https://github.com/yuri2peter/AIgnition](https://github.com/yuri2peter/AIgnition#readme)
+
+You can contribute to the project in several ways:
+
+- **Star** the repository.
+- **Fork** the repository.
+- **Share** the project with your colleagues and peers.
+- **Submit** issues and feature requests.
+`,
   };
   return PageSchema.parse(defaultRootPageData);
 }
