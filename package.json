@@ -21,7 +21,7 @@
     "start:node": "concurrently \"npm run dev:renderer\" \"npm run dev:node-server\"",
     "dev:renderer": "concurrently \"cross-env NODE_ENV=development webpack serve --config ./dev/webpack.config.renderer.ts\" \"cross-env NODE_ENV=development ts-node src/renderer/startChii.ts\"",
     "dev:node-server": "nodemon --config ./dev/nodemon.node.server.json",
-    "build": "concurrently \"npm run build:renderer\" \"npm run build:server",
+    "build": "concurrently \"npm run build:renderer\" \"npm run build:server\"",
     "build:renderer": "cross-env NODE_ENV=production webpack --config ./dev/webpack.config.renderer.ts",
     "build:server": "cross-env NODE_ENV=production webpack --config ./dev/webpack.config.server.ts",
     "prod:node": "npm run build && node dist/server/main.js",
