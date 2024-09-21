@@ -2,6 +2,7 @@ import { FileUploader } from 'src/renderer/helpers/FileUploader';
 import { TextAreaTextApi } from '../ReactMD';
 import { notifications } from '@mantine/notifications';
 import TurndownService from 'turndown';
+import { useUploadingOverlayStore } from './UploadingOverlay/store';
 const turndownPluginGfm = require('turndown-plugin-gfm');
 
 export function parseTitleFromMarkdown(markdown: string) {
@@ -16,16 +17,40 @@ export function parseTitleFromMarkdown(markdown: string) {
   return '';
 }
 
-export function insertFilesIntoEditor(files: File[], api: TextAreaTextApi) {
-  files.forEach(async (file) => {
-    const uploader = new FileUploader({ file });
-    const { url, originalFilename, mimetype } = await uploader.upload();
-    api.replaceSelection(
-      ` ${
-        mimetype.startsWith('image') ? '!' : ''
-      }[${originalFilename}](${url}) `
-    );
-  });
+export async function insertFilesIntoEditor(
+  files: File[],
+  api: TextAreaTextApi
+) {
+  const { begin, end, updateInfo } =
+    useUploadingOverlayStore.getState().actions;
+  begin(files);
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]!;
+      const uploader = new FileUploader({
+        file,
+        onUploadProgress(eventData) {
+          const { loaded, total, progress } = eventData;
+          updateInfo(i, {
+            loaded,
+            total,
+            progress,
+            mimetype: file.type,
+            name: file.name,
+          });
+        },
+      });
+      const { url, originalFilename, mimetype } = await uploader.upload();
+      api.replaceSelection(
+        ` ${
+          mimetype.startsWith('image') ? '!' : ''
+        }[${originalFilename}](${url}) `
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  end();
 }
 
 export function alertSelectionIsEmpty() {

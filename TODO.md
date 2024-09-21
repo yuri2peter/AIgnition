@@ -1,2 +1,3 @@
 - search keywords highlight
 - PWA
+- upload progress
