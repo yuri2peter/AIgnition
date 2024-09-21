@@ -1,8 +1,9 @@
 {
-  "version": "1.3.0",
-  "releaseDate": "2024-09-17",
+  "version": "1.4.0",
+  "releaseDate": "2024-09-21",
   "updateDetails": [
-    "[FEATURE] User guide.",
-    "[REFINE] Removed unused package options."
+    "[FEATURE] PWA support.",
+    "[REFINE] Show progress when uploading.",
+    "[REFINE] Refine some details."
   ]
 }

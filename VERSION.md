@@ -1,3 +1,7 @@
+- v1.4.0
+  - [FEATURE] PWA support.
+  - [REFINE] Show progress when uploading.
+  - [REFINE] Refine some details.
 - v1.3.0
   - [FEATURE] User guide.
   - [REFINE] Removed unused package options.

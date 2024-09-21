@@ -17,6 +17,7 @@ import SubpageLinks from '../miscs/SubpageLinks';
 import { ContiguousPage } from '../miscs/ContiguousPage';
 import Comment from '../miscs/Comment';
 import { MetaLite } from '../miscs/Meta';
+import UploadingOverlay from 'src/renderer/components/EditorWrap/UploadingOverlay';
 
 const EditorMode: React.FC<{}> = () => {
   const currentPageId = usePageStore((s) => s.currentPageId);
@@ -42,6 +43,7 @@ const EditorMode: React.FC<{}> = () => {
   }, [loading]);
   return (
     <>
+      <UploadingOverlay />
       <EditorWrap
         instanceId={id}
         useAi={aiEnabled}
