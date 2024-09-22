@@ -1,3 +1,5 @@
+- v1.4.1
+  - [REFINE] PWA uses minimal-ui instead of standalone.
 - v1.4.0
   - [FEATURE] PWA support.
   - [REFINE] Show progress when uploading.
