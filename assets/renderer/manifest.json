@@ -5,7 +5,7 @@
   "description": "AIgnition is an intuitive, open-source note-taking web app, powered by AI to simplify and enhance your note-taking experience.",
   "start_url": "/",
   "orientation": "any",
-  "display": "standalone",
+  "display": "minimal-ui",
   "icons": [
     {
       "src": "/assets/images/logo_square.png",

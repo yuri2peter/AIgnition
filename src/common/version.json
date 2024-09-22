@@ -1,9 +1,8 @@
 {
-  "version": "1.4.0",
-  "releaseDate": "2024-09-21",
+  "version": "1.4.1",
+  "releaseDate": "2024-09-22",
   "updateDetails": [
-    "[FEATURE] PWA support.",
-    "[REFINE] Show progress when uploading.",
+    "[FEATURE] PWA uses minimal-ui instead of standalone.",
     "[REFINE] Refine some details."
   ]
 }
