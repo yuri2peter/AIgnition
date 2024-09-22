@@ -17,7 +17,7 @@
 
 ## 💡 简介
 
-**AIgnition** 是一款直观、开源的笔记应用，由 AI 提供支持，旨在简化和增强您的笔记体验。
+**AIgnition** 是一款直观、开源的Web笔记应用，使用AI大模型增强您的笔记体验。
 
 ![multi-mockup](https://github.com/yuri2peter/picx-images-hosting/raw/master/multi-mockup.5c0xn7y36a.webp)
 

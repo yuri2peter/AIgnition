@@ -18,8 +18,8 @@ const PageInfo: React.FC = () => {
           flexShrink: 0,
         }}
       >
-        <IconListDetails size={20} stroke={2} />
-        <Text mr={'auto'} truncate td={'none'} fw={700}>
+        <IconListDetails size={20} stroke={1.5} />
+        <Text mr={'auto'} truncate td={'none'}>
           Table of Contents
         </Text>
       </Group>

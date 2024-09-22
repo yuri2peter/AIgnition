@@ -47,7 +47,7 @@ export const LogoDisplay: React.FC<{
       >
         {type === 1 && <Avatar src={siteLogo} alt="Site logo" size={28} />}
         {type === 2 && (
-          <Text fw={700} size="lg" c={'gray.7'} ml={8}>
+          <Text fw={500} size="lg" c={'gray.7'} ml={8}>
             {getPageTitleFixed(title)}
           </Text>
         )}
