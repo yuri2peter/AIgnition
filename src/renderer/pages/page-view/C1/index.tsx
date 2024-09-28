@@ -95,17 +95,6 @@ const C1: React.FC<{}> = () => {
               <IconClipboardList size={20} stroke={1.5} />
             </ActionIcon>
           </Tooltip>
-          <Tooltip {...tooltipProps} label="Web Widgets">
-            <ActionIcon
-              {...getIconProps(sid === 'webWidgets')}
-              onClick={() => {
-                setShowLeft(true);
-                setActivedSectionId('webWidgets');
-              }}
-            >
-              <IconPuzzle size={20} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
         </>
       )}
       <FlexGrow />

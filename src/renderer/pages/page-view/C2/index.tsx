@@ -10,7 +10,6 @@ import { useUserStore } from 'src/renderer/store/useUserStore';
 import UserPanel from '../C2/panels/User';
 import { Favorites } from '../C2/panels/Favorites';
 import { QuickNotes } from '../C2/panels/QuickNotes';
-import WebWidgets from '../C2/panels/WebWidgets';
 import Logo from '../miscs/Logo';
 
 const C2: React.FC<{}> = () => {
@@ -21,14 +20,13 @@ const C2: React.FC<{}> = () => {
       <Logo type={2} />
       <Box style={{ flexGrow: 1, overflow: 'auto' }}>
         <PageNav show={sid === 'pages'} />
-        {sid === 'settings' && <Settings />}
-        {sid === 'aichat' && <Aichat />}
-        {sid === 'data' && <SectionData />}
         {sid === 'search' && <Search />}
-        {sid === 'user' && <UserPanel />}
         {loggedIn && <Favorites show={sid === 'favorites'} />}
+        {sid === 'aichat' && <Aichat />}
         {sid === 'quickNotes' && <QuickNotes show={true} />}
-        {loggedIn && <WebWidgets show={sid === 'webWidgets'} />}
+        {sid === 'settings' && <Settings />}
+        {sid === 'data' && <SectionData />}
+        {sid === 'user' && <UserPanel />}
       </Box>
     </Stack>
   );
