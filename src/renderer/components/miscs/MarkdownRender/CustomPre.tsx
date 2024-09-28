@@ -19,13 +19,22 @@ const CustomPre: React.FC<{
   className?: string;
   children: React.ReactNode;
   isHtml?: boolean;
+  defaultShowPreviewInHtmlCodeBlock?: boolean;
   showMaximize?: boolean;
-}> = ({ className, children, showMaximize, isHtml }) => {
+}> = ({
+  className,
+  children,
+  showMaximize,
+  defaultShowPreviewInHtmlCodeBlock = false,
+  isHtml,
+}) => {
   const refRoot = useRef<HTMLDivElement>(null);
   const refIframe = useRef<HTMLIFrameElement>(null);
   const [content, setContent] = useState('');
   const [iframeHeight, setIframeHeight] = useState(120);
-  const [previewMode, setPreviewMode] = useState(true);
+  const [previewMode, setPreviewMode] = useState(
+    defaultShowPreviewInHtmlCodeBlock
+  );
   useEffect(() => {
     const pre = refRoot.current?.querySelector('pre');
     if (pre) {
@@ -39,7 +48,7 @@ const CustomPre: React.FC<{
       if (body && body.scrollHeight) {
         body.style.margin = '0';
         body.style.padding = '8px';
-        setIframeHeight(body.scrollHeight);
+        setIframeHeight(body.scrollHeight + 4);
       }
     }, 1000);
     return () => clearInterval(itv);

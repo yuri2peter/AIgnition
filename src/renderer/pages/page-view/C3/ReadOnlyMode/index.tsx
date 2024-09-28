@@ -48,6 +48,7 @@ const ReadonlyMode: React.FC<{}> = () => {
             <MarkdownRender
               text={page?.content || 'No content.'}
               className="md-content-render"
+              defaultShowPreviewInHtmlCodeBlock
             />
             <SubpageLinks />
             <Box></Box>
