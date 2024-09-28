@@ -36,7 +36,14 @@ const components: Partial<Components> = {
     );
   },
   pre: ({ className, children }) => {
-    return <CustomPre className={className} children={children} showMaximize />;
+    return (
+      <CustomPre
+        className={className}
+        children={children}
+        showMaximize
+        isHtml={className === 'language-html'}
+      />
+    );
   },
 };
 

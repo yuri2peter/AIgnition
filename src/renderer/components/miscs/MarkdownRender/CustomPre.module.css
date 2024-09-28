@@ -17,5 +17,13 @@
     border-radius: 0;
     margin: 0;
     padding: 0;
+    max-height: 720px;
+  }
+
+  .iframe {
+    background-color: white;
+    min-height: 120px;
+    max-height: 720px;
+    height: 560px;
   }
 }

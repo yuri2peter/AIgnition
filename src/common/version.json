@@ -1,8 +1,8 @@
 {
-  "version": "1.4.1",
-  "releaseDate": "2024-09-22",
+  "version": "1.5.0",
+  "releaseDate": "2024-09-27",
   "updateDetails": [
-    "[FEATURE] PWA uses minimal-ui instead of standalone.",
+    "[FEATURE] HTML code block preview.",
     "[REFINE] Refine some details."
   ]
 }

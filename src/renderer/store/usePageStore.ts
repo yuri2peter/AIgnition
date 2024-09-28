@@ -24,6 +24,7 @@ import {
   emitEventPageUpdated,
   emitEventReloadTree,
 } from '../pages/page-view/C2/panels/PageNav/events';
+import { useMainLayoutStore } from './useMainLayoutStore';
 interface Store {
   pagesLoaded: boolean;
   pageFetchError: boolean;
@@ -76,6 +77,7 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
       await pullPages();
       emitEventPageUpdated([parent]);
       navigate(getPageRoute(newPage.id));
+      useMainLayoutStore.getState().actions.setShowLeft(false);
     }
     return newPage.id;
   };
