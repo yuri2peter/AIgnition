@@ -1,6 +1,9 @@
 - v1.6.0
   - [FEATURE] Remove Web Widgets feature(use html code block instead).
   - [REFINE] Refine some details.
+- v1.5.0
+  - [FEATURE] HTML code block preview.
+  - [REFINE] Refine some details.
 - v1.4.1
   - [REFINE] PWA uses minimal-ui instead of standalone.
   - [REFINE] Refine some details.

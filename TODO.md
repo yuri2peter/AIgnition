@@ -1,2 +1,2 @@
 - search keywords highlight
-- html code block tutorial
+- Recently opened pages
