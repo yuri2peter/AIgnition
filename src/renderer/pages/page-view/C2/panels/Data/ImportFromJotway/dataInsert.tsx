@@ -8,31 +8,29 @@ export async function dataInsert(dataParsed: DataParsed) {
   const createPage = usePageStore.getState().actions.createPage;
   // create root
   const rootTitle = `Jotway (${formatTime()})`;
-  const rootId = await createPage(
-    {
+  const rootId = await createPage({
+    item: {
       title: rootTitle,
       content: `# ${rootTitle}\n\n`,
       isFolder: true,
     },
-    ROOT_PAGE_ID,
-    true
-  );
+    parent: ROOT_PAGE_ID,
+  });
 
   // create dirs
   for (const dir of dataParsed) {
     // dir parent page
-    const dirId = await createPage(
-      {
+    const dirId = await createPage({
+      item: {
         title: dir.tag,
         content: `# ${dir.tag}\n\n`,
         isFolder: true,
       },
-      rootId,
-      true
-    );
+      parent: rootId,
+    });
 
-    await createPage(
-      {
+    await createPage({
+      item: {
         title: 'Bookmarks',
         content:
           '# Bookmarks\n\n' +
@@ -43,22 +41,22 @@ export async function dataInsert(dataParsed: DataParsed) {
             )
             .join('\n'),
       },
-      dirId,
-      true
-    );
+      parent: dirId,
+      noEffects: true,
+    });
 
     // article pages
     for (const article of dir.linkers.filter((t) => t.article)) {
-      await createPage(
-        {
+      await createPage({
+        item: {
           title: article.name,
           content: article.content,
         },
-        dirId,
-        true
-      );
+        parent: dirId,
+        noEffects: true,
+      });
     }
-
-    emitEventReloadTree();
   }
+
+  emitEventReloadTree();
 }

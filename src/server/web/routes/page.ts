@@ -1,6 +1,11 @@
 import db, { getDefaultRootPage } from 'src/server/data/db';
 import { Controller } from '../types/controller';
-import { Page, PageCustomIdSchema, PageSchema } from 'src/common/type/page';
+import {
+  Page,
+  PageCustomIdSchema,
+  PageSchema,
+  TRASH_PAGE_ID,
+} from 'src/common/type/page';
 import { getParsedId } from 'src/common/utils/type';
 import { z } from 'zod';
 import { cloneDeep } from 'lodash';
@@ -12,6 +17,7 @@ import {
   getAncestorsNodes,
   getCurrentTreeNodeRelated,
   getDescendantsNodes,
+  getParentNode,
 } from 'src/common/utils/tree';
 import MemCache from 'src/common/libs/MemCache';
 
@@ -196,6 +202,28 @@ const page: Controller = (router) => {
 
   router.post('/api/page/reset-data', async (ctx) => {
     db().get().pages = [getDefaultRootPage()];
+    db().save();
+    ctx.body = { ok: 1 };
+  });
+
+  router.post('/api/page/move-items-to-trash', async (ctx) => {
+    const { ids } = z
+      .object({ ids: z.array(z.string()) })
+      .parse(ctx.request.body);
+    const pages = db().get().pages;
+    const trashPage = findPage(TRASH_PAGE_ID)!;
+    for (const id of ids) {
+      const item = findPage(id);
+      if (!item) {
+        ctx.throw(404, 'page not found');
+        return;
+      }
+      item.isPublicFolder = false;
+      item.isFavorite = false;
+      const parentNode = getParentNode(pages, item)!;
+      parentNode.children = parentNode.children.filter((t) => t !== item.id);
+      trashPage.children.push(item.id);
+    }
     db().save();
     ctx.body = { ok: 1 };
   });

@@ -68,10 +68,13 @@ const NavHeader: React.FC = () => {
           size="sm"
           color="gray"
           onClick={() => {
-            createPage(
-              { title: 'Untitled', content: '# Untitled\n\n', isFolder: true },
-              ROOT_PAGE_ID
-            ).catch(apiErrorHandler);
+            createPage({
+              item: {
+                title: 'Untitled',
+                content: '# Untitled\n\n',
+                isFolder: true,
+              },
+            }).catch(apiErrorHandler);
           }}
         >
           <IconFolderPlus {...iconProps} />
@@ -83,10 +86,9 @@ const NavHeader: React.FC = () => {
           size="sm"
           color="gray"
           onClick={() => {
-            createPage(
-              { title: 'Untitled', content: '# Untitled\n\n' },
-              ROOT_PAGE_ID
-            ).catch(apiErrorHandler);
+            createPage({
+              item: { title: 'Untitled', content: '# Untitled\n\n' },
+            }).catch(apiErrorHandler);
           }}
         >
           <IconFilePlus {...iconProps} />

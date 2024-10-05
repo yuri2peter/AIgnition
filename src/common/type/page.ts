@@ -7,11 +7,12 @@ import {
 } from '../utils/type';
 
 export const ROOT_PAGE_ID = 'ROOT_PAGE';
+export const TRASH_PAGE_ID = 'TRASH_PAGE';
 
 export const PageCustomIdSchema = z
   .string()
-  .refine((id) => id !== ROOT_PAGE_ID, {
-    message: 'id cannot be ROOT_PAGE',
+  .refine((id) => id !== ROOT_PAGE_ID && id !== TRASH_PAGE_ID, {
+    message: 'id cannot be ROOT_PAGE or TRASH_PAGE',
   })
   .refine((id) => !id.startsWith('auth'), {
     message: 'id cannot start with "auth"',

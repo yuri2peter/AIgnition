@@ -7,6 +7,7 @@ import {
   PageSchema,
   PagesSchema,
   ROOT_PAGE_ID,
+  TRASH_PAGE_ID,
 } from 'src/common/type/page';
 import { createSelector } from 'reselect';
 import { decode } from 'js-base64';
@@ -63,11 +64,15 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     });
     emitEventPageUpdated(pages.map((t) => t.id));
   };
-  const createPage = async (
-    item: Partial<Page> = {},
-    parent: string,
-    noEffects = false
-  ) => {
+  const createPage = async ({
+    item = {},
+    parent = ROOT_PAGE_ID,
+    noEffects = false,
+  }: {
+    item?: Partial<Page>;
+    parent?: string;
+    noEffects?: boolean;
+  }) => {
     const { data } = await api().post('/api/page/create-item', {
       item,
       parent,
@@ -115,6 +120,11 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     await pullPages();
     emitEventReloadTree();
   };
+  const clearTrash = async () => {
+    const pages = selectComputedPagesDfs(get());
+    const trashPage = getNodeById(pages, TRASH_PAGE_ID)!;
+    await deletePages(trashPage.children);
+  };
   const setCurrentPageId = (currentPageId: string) => {
     set({ currentPageId });
   };
@@ -154,6 +164,33 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     set({ pagesLoaded });
   };
 
+  const moveToTrash = async (pageId: string) => {
+    const pages = selectComputedPagesDfs(get());
+    const currentPage = getNodeById(pages, pageId)!;
+    const parentId = currentPage.computed.parent!;
+    const parentPage = getNodeById(pages, parentId)!;
+    await patchPage({
+      id: pageId,
+      isPublicFolder: false,
+      isFavorite: false,
+    });
+    await patchPage({
+      id: parentId,
+      children: parentPage.children.filter((t) => t !== pageId),
+    });
+    const trashPage = getNodeById(pages, TRASH_PAGE_ID)!;
+    await patchPage({
+      id: TRASH_PAGE_ID,
+      children: [...trashPage.children, pageId],
+    });
+  };
+
+  const movePagesToTrash = async (pageIds: string[]) => {
+    await api().post('/api/page/move-items-to-trash', { ids: pageIds });
+    await pullPages();
+    emitEventReloadTree();
+  };
+
   return {
     actions: {
       pullPages,
@@ -168,6 +205,9 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
       setPagesLoaded,
       pullGuestPages,
       clearPages,
+      clearTrash,
+      moveToTrash,
+      movePagesToTrash,
     },
   };
 });
@@ -208,7 +248,7 @@ export const selectNavTreeDatas = createSelector(
         index: page.id,
         children: page.children,
         isFolder: page.isFolder,
-        canMove: true,
+        canMove: ![ROOT_PAGE_ID, TRASH_PAGE_ID].includes(page.id),
         canRename: false,
         data: page,
       };
