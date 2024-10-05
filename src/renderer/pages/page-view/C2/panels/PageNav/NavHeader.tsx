@@ -11,7 +11,6 @@ import {
   IconFolderPlus,
   IconRefresh,
 } from '@tabler/icons-react';
-import { ROOT_PAGE_ID } from 'src/common/type/page';
 import { apiErrorHandler } from 'src/renderer/helpers/api';
 import FlexGrow from 'src/renderer/components/miscs/FlexGrow';
 import { useUserStore } from 'src/renderer/store/useUserStore';
@@ -70,8 +69,8 @@ const NavHeader: React.FC = () => {
           onClick={() => {
             createPage({
               item: {
-                title: 'Untitled',
-                content: '# Untitled\n\n',
+                title: '📁 Untitled',
+                content: '# 📁 Untitled\n\n',
                 isFolder: true,
               },
             }).catch(apiErrorHandler);
@@ -87,7 +86,7 @@ const NavHeader: React.FC = () => {
           color="gray"
           onClick={() => {
             createPage({
-              item: { title: 'Untitled', content: '# Untitled\n\n' },
+              item: { title: '📄 Untitled', content: '# 📄 Untitled\n\n' },
             }).catch(apiErrorHandler);
           }}
         >

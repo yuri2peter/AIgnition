@@ -55,7 +55,7 @@ export function openPageActionsMenu(params: {
         icon: <IconFilePlus size={16} />,
         onClick: () => {
           createPage({
-            item: { title: 'Untitled', content: '# Untitled\n\n' },
+            item: { title: '📄 Untitled', content: '# 📄 Untitled\n\n' },
             parent: node.id,
           }).catch(apiErrorHandler);
         },
@@ -67,8 +67,8 @@ export function openPageActionsMenu(params: {
         onClick: () => {
           createPage({
             item: {
-              title: 'Untitled',
-              content: '# Untitled\n\n',
+              title: '📁 Untitled',
+              content: '# 📁 Untitled\n\n',
               isFolder: true,
             },
             parent: node.id,

@@ -22,8 +22,8 @@ export async function dataInsert(dataParsed: DataParsed) {
     // dir parent page
     const dirId = await createPage({
       item: {
-        title: dir.tag,
-        content: `# ${dir.tag}\n\n`,
+        title: '📁 ' + dir.tag,
+        content: `# 📁 ${dir.tag}\n\n`,
         isFolder: true,
       },
       parent: rootId,
@@ -31,9 +31,9 @@ export async function dataInsert(dataParsed: DataParsed) {
 
     await createPage({
       item: {
-        title: 'Bookmarks',
+        title: '🔖 Bookmarks',
         content:
-          '# Bookmarks\n\n' +
+          '# 🔖 Bookmarks\n\n' +
           dir.linkers
             .filter((t) => !t.article)
             .map(
@@ -49,7 +49,7 @@ export async function dataInsert(dataParsed: DataParsed) {
     for (const article of dir.linkers.filter((t) => t.article)) {
       await createPage({
         item: {
-          title: article.name,
+          title: '📄 ' + article.name,
           content: article.content,
         },
         parent: dirId,

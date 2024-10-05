@@ -8,8 +8,8 @@ export async function dataInsert(dataParsed: IBaseMark) {
   const traversal = async (mark: IBaseMark, parentId = ROOT_PAGE_ID) => {
     const id = await createPage({
       item: {
-        title: mark.name,
-        content: `# ${mark.name}\n\n`,
+        title: '📁 ' + mark.name,
+        content: `# 📁 ${mark.name}\n\n`,
         isFolder: true,
       },
       parent: parentId,
@@ -19,9 +19,9 @@ export async function dataInsert(dataParsed: IBaseMark) {
     if (bookmarks.length > 0) {
       await createPage({
         item: {
-          title: 'Bookmarks',
+          title: '🔖 Bookmarks',
           content:
-            '# Bookmarks\n\n' +
+            '# 🔖 Bookmarks\n\n' +
             bookmarks.map((t) => `- [${t.name}](${t.href})`).join('\n'),
         },
         parent: id,
