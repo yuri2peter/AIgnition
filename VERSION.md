@@ -1,4 +1,5 @@
 - v1.6.0
+  - [FEATURE] Packaging the APP into a Docker image (preview version).
   - [FEATURE] Trash bin.
   - [FEATURE] Remove Web Widgets feature(use html code block instead).
   - [REFINE] Refine some details.

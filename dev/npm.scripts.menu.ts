@@ -22,6 +22,10 @@ const scripts = [
     name: 'Package docker image',
     value: 'package:docker',
   },
+  {
+    name: 'Package docker image (preview)',
+    value: 'package:docker-preview',
+  },
 ];
 
 inquirer
