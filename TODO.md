@@ -1,4 +1,3 @@
 - search keywords highlight
 - Recently opened pages
-- Better page level indicator
 - Autofocus when create page(auto select title input)
