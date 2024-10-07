@@ -1,3 +1,2 @@
 - search keywords highlight
 - Recently opened pages
-- Autofocus when create page(auto select title input)

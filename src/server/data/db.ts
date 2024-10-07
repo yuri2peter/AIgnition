@@ -38,6 +38,16 @@ const dbInstance = new JsonDb({
         .find((t) => t.id === ROOT_PAGE_ID)!
         .children.unshift(TRASH_PAGE_ID);
     }
+
+    // experimental feature: Add 📁 or 📄 for existing page.
+    // e.g. # Hello -> # 📄 Hello
+    data.pages.forEach((page) => {
+      if (!page.title.match(/^..\s/)) {
+        const icon = page.isFolder ? '📁' : '📄';
+        page.title = `${icon} ${page.title}`;
+        page.content = page.content.replace(/^#\s/, `# ${icon} `);
+      }
+    });
   },
 });
 consoleLog('Database initialized.', 'db');
