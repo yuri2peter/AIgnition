@@ -35,7 +35,6 @@ const EditorMode: React.FC<{}> = () => {
       // If the page is a new page, auto focus and select the title
       (() => {
         if (currentPage.content.match(/^#\s.+Untitled\s+$/)) {
-          console.log(currentPage);
           requestAnimationFrame(() => {
             const el: HTMLTextAreaElement | null = document.querySelector(
               'textarea.w-md-editor-text-input'
@@ -50,7 +49,8 @@ const EditorMode: React.FC<{}> = () => {
         }
       })();
     }
-  }, [currentPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage?.id]);
   useEffect(() => {
     if (!loading) {
       const anchor = document.querySelector('.w-md-editor-preview>*>*>*');
