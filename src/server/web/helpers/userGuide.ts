@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
-import md5 from 'md5';
 import path from 'path';
 import { userGuidePath } from 'src/common/paths.app';
 import { Data } from 'src/common/type/data';
 import { Page, PageSchema, ROOT_PAGE_ID } from 'src/common/type/page';
+import { shortId } from 'src/common/utils/string';
 import { deleteNode } from 'src/common/utils/tree';
 
 const userGuidePageId = 'aignition-user-guide';
@@ -35,7 +35,7 @@ export function recreateUserGuide(data: Data) {
     const subs = fs.readdirSync(path.join(userGuidePath, dir));
     const parentPage = pages.find((item) => item.id === parentId)!;
     for (const sub of subs) {
-      const newPageId = md5(path.join(dir, sub)).substring(0, 6);
+      const newPageId = shortId();
       const titleReg = /^[\d.]+\s(.+)(\.md)?$/;
       const title = titleReg.exec(sub)![1];
       const newPage: Page = PageSchema.parse({

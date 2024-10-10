@@ -29,6 +29,7 @@
 
 - Markdown WYSIWYG
 - Live preview
+- HTML block rendering
 - Code block syntax highlighting
 
 ### AI Engine

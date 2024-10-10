@@ -259,7 +259,13 @@ const InternalMDEditor = React.forwardRef<RefMDEditor, MDEditorProps>(
     const handlePreviewScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) =>
       handleScroll(e, 'preview');
     const markdownRender = useMemo(
-      () => <MarkdownRender {...previewOptions} text={markdownLazy} />,
+      () => (
+        <MarkdownRender
+          {...previewOptions}
+          text={markdownLazy}
+          defaultShowPreviewInHtmlCodeBlock
+        />
+      ),
       [previewOptions, markdownLazy]
     );
     const mdPreview = (

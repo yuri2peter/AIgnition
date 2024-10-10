@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react';
+import React, { useMemo } from 'react';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import rehypeExternalLinks from 'rehype-external-links';
 import remarkGfm from 'remark-gfm';
@@ -18,40 +18,62 @@ const themeClasses: Record<string, string> = {
   default: themeDefault.root!,
 };
 
-const components: Partial<Components> = {
-  a: ({ ref, ...props }) => {
-    return <CustomLink {...props} />;
-  },
-  img: ({ ref, ...props }) => {
-    return (
-      <Zoom>
-        <Image
-          {...props}
-          w="auto"
-          fit="contain"
-          style={{ borderRadius: '0.375rem' }}
-          fallbackSrc="/assets/icons/image_error.png"
+function getComponents(options: {
+  defaultShowPreviewInHtmlCodeBlock?: boolean;
+}): Partial<Components> {
+  return {
+    a: ({ ref, ...props }) => {
+      return <CustomLink {...props} />;
+    },
+    img: ({ ref, ...props }) => {
+      return (
+        <Zoom>
+          <Image
+            {...props}
+            w="auto"
+            fit="contain"
+            style={{ borderRadius: '0.375rem' }}
+            fallbackSrc="/assets/icons/image_error.png"
+          />
+        </Zoom>
+      );
+    },
+    pre: ({ className, children }) => {
+      return (
+        <CustomPre
+          className={className}
+          children={children}
+          showMaximize
+          isHtml={className === 'language-html'}
+          defaultShowPreviewInHtmlCodeBlock={
+            options.defaultShowPreviewInHtmlCodeBlock
+          }
         />
-      </Zoom>
-    );
-  },
-  pre: ({ className, children }) => {
-    return (
-      <CustomPre
-        className={className}
-        children={children}
-        showMaximize
-        isHtml={className === 'language-html'}
-      />
-    );
-  },
-};
+      );
+    },
+  };
+}
 
 const MarkdownRender: React.FC<
-  { text: string; theme?: string; dark?: boolean } & React.ComponentProps<
-    typeof MarkdownPreview
-  >
-> = ({ text, theme = 'default', className, dark = false, ...otherProps }) => {
+  {
+    text: string;
+    theme?: string;
+    dark?: boolean;
+    defaultShowPreviewInHtmlCodeBlock?: boolean;
+  } & React.ComponentProps<typeof MarkdownPreview>
+> = ({
+  text,
+  theme = 'default',
+  className,
+  dark = false,
+  defaultShowPreviewInHtmlCodeBlock,
+  ...otherProps
+}) => {
+  const components = useMemo(() => {
+    return getComponents({
+      defaultShowPreviewInHtmlCodeBlock,
+    });
+  }, [defaultShowPreviewInHtmlCodeBlock]);
   return (
     <MarkdownPreview
       {...otherProps}
@@ -89,8 +111,8 @@ const MarkdownRender: React.FC<
         'prose-a:no-underline',
         'prose-a:break-all',
         'hover:prose-a:underline',
-        'prose-blockquote:text-green-600',
-        'prose-blockquote:border-green-600'
+        'prose-blockquote:text-slate-600',
+        'prose-blockquote:border-slate-300'
       )}
     />
   );

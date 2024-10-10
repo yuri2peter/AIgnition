@@ -11,16 +11,21 @@ import {
   IconFolderPlus,
   IconFilePlus,
   IconEyeClosed,
+  IconRecycleOff,
+  IconRecycle,
 } from '@tabler/icons-react';
 import React, { useCallback } from 'react';
-import { usePageStore } from 'src/renderer/store/usePageStore';
+import {
+  selectComputedPagesDfs,
+  usePageStore,
+} from 'src/renderer/store/usePageStore';
 import { ShowContextMenuFunction, useContextMenu } from 'mantine-contextmenu';
 import { getPageRoute } from 'src/renderer/helpers/miscs';
 import { apiErrorHandler } from 'src/renderer/helpers/api';
 import { notifications } from '@mantine/notifications';
 import { modals, openContextModal } from '@mantine/modals';
 import { useUserStore } from 'src/renderer/store/useUserStore';
-import { ROOT_PAGE_ID } from 'src/common/type/page';
+import { ROOT_PAGE_ID, TRASH_PAGE_ID } from 'src/common/type/page';
 import { getNodeById } from 'src/common/utils/tree';
 
 export function openPageActionsMenu(params: {
@@ -30,10 +35,18 @@ export function openPageActionsMenu(params: {
 }) {
   const { showContextMenu, event } = params;
   const {
-    pages,
-    actions: { createPage, deletePage, patchPage, duplicatePage },
+    actions: {
+      createPage,
+      deletePage,
+      patchPage,
+      duplicatePage,
+      clearTrash,
+      moveToTrash,
+    },
   } = usePageStore.getState();
+  const pages = selectComputedPagesDfs(usePageStore.getState());
   const node = getNodeById(pages, params.itemId)!;
+  const isInsideTrash = node.computed.isTrash;
 
   const menu = (() => {
     const ms = {
@@ -43,10 +56,10 @@ export function openPageActionsMenu(params: {
         color: 'blue',
         icon: <IconFilePlus size={16} />,
         onClick: () => {
-          createPage(
-            { title: 'Untitled', content: '# Untitled\n\n' },
-            node.id
-          ).catch(apiErrorHandler);
+          createPage({
+            item: { title: '📄 Untitled', content: '# 📄 Untitled\n\n' },
+            parent: node.id,
+          }).catch(apiErrorHandler);
         },
       },
       newSubfolder: {
@@ -54,10 +67,14 @@ export function openPageActionsMenu(params: {
         color: 'blue',
         icon: <IconFolderPlus size={16} />,
         onClick: () => {
-          createPage(
-            { title: 'Untitled', content: '# Untitled\n\n', isFolder: true },
-            node.id
-          ).catch(apiErrorHandler);
+          createPage({
+            item: {
+              title: '📁 Untitled',
+              content: '# 📁 Untitled\n\n',
+              isFolder: true,
+            },
+            parent: node.id,
+          }).catch(apiErrorHandler);
         },
       },
       toogleFavorite: {
@@ -132,12 +149,40 @@ export function openPageActionsMenu(params: {
             children: (
               <Text size="sm">
                 This action will remove the page "{node.title}" and all its
-                subpages. Please click one of these buttons to proceed.
+                subpages permanently. Please click one of these buttons to
+                proceed.
               </Text>
             ),
             labels: { confirm: 'Confirm', cancel: 'Cancel' },
             onConfirm: () => {
               deletePage(node.id).catch(apiErrorHandler);
+            },
+          });
+        },
+      },
+      moveToTrash: {
+        color: 'red',
+        title: 'Move to trash',
+        icon: <IconRecycle size={16} />,
+        onClick: () => {
+          moveToTrash(node.id).catch(apiErrorHandler);
+        },
+      },
+      clearAllTrash: {
+        title: 'Clear trash',
+        icon: <IconRecycleOff size={16} />,
+        onClick: () => {
+          modals.openConfirmModal({
+            title: 'Please confirm your action',
+            children: (
+              <Text size="sm">
+                This action will remove all pages in trash permanently. Please
+                click one of these buttons to proceed.
+              </Text>
+            ),
+            labels: { confirm: 'Confirm', cancel: 'Cancel' },
+            onConfirm: () => {
+              clearTrash().catch(apiErrorHandler);
             },
           });
         },
@@ -151,6 +196,7 @@ export function openPageActionsMenu(params: {
       ms.copyLink,
       ms.toogleIsPublicFolder,
     ];
+    const trashPageMenu = [ms.clearAllTrash];
     const regularFolderMenu = [
       ms.newSubpage,
       ms.newSubfolder,
@@ -161,7 +207,7 @@ export function openPageActionsMenu(params: {
       ms.toogleIsPublicFolder,
       ms.duplicate,
       ms.divider,
-      ms.handleRemove,
+      ms.moveToTrash,
     ];
     const regularMenu = [
       ms.toogleFavorite,
@@ -169,16 +215,23 @@ export function openPageActionsMenu(params: {
       ms.changeRoute,
       ms.duplicate,
       ms.divider,
-      ms.handleRemove,
+      ms.moveToTrash,
     ];
-
+    const insideTrashItemsMenu = [ms.duplicate, ms.handleRemove];
     if (!useUserStore.getState().loggedIn) {
       return unloggedInMenu;
     }
     if (node.id === ROOT_PAGE_ID) {
       return rootPageMenu;
     }
-    return node.isFolder ? regularFolderMenu : regularMenu;
+    if (node.id === TRASH_PAGE_ID) {
+      return trashPageMenu;
+    }
+    return isInsideTrash
+      ? insideTrashItemsMenu
+      : node.isFolder
+        ? regularFolderMenu
+        : regularMenu;
   })();
 
   const handle = showContextMenu(

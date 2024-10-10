@@ -9,7 +9,7 @@ import {
   IconUser,
   IconStar,
   IconClipboardList,
-  IconPuzzle,
+  IconHistory,
 } from '@tabler/icons-react';
 import FlexGrow from 'src/renderer/components/miscs/FlexGrow';
 import { useLeftsideStore } from 'src/renderer/store/useLeftsideStore';
@@ -61,6 +61,17 @@ const C1: React.FC<{}> = () => {
       </Tooltip>
       {loggedIn && (
         <>
+          <Tooltip {...tooltipProps} label="Recently Opened">
+            <ActionIcon
+              {...getIconProps(sid === 'recently')}
+              onClick={() => {
+                setShowLeft(true);
+                setActivedSectionId('recently');
+              }}
+            >
+              <IconHistory size={20} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
           <Tooltip {...tooltipProps} label="Favorites">
             <ActionIcon
               {...getIconProps(sid === 'favorites')}
@@ -93,17 +104,6 @@ const C1: React.FC<{}> = () => {
               }}
             >
               <IconClipboardList size={20} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip {...tooltipProps} label="Web Widgets">
-            <ActionIcon
-              {...getIconProps(sid === 'webWidgets')}
-              onClick={() => {
-                setShowLeft(true);
-                setActivedSectionId('webWidgets');
-              }}
-            >
-              <IconPuzzle size={20} stroke={1.5} />
             </ActionIcon>
           </Tooltip>
         </>

@@ -6,10 +6,10 @@ import {
 } from 'src/renderer/store/usePageStore';
 import NavItemListLite from '../../miscs/NavItemListLite';
 
-export const Favorites: React.FC<{ show: boolean }> = ({ show }) => {
+export const Favorites: React.FC = () => {
   const favoritePages = usePageStore(selectFavoritePages);
   return (
-    <Stack p={16} gap={24} h={'100%'} display={show ? undefined : 'none'}>
+    <Stack p={16} gap={24} h={'100%'}>
       <Text fw={'bold'}>Favorites</Text>
       {favoritePages.length === 0 ? (
         <>

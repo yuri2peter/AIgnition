@@ -28,3 +28,4 @@ Thumbs.db
 /archive.zip
 /src/.env
 /.npmrc
+/package/docker/onPushed.ts

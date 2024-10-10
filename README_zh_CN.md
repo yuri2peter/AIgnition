@@ -27,6 +27,7 @@
 
 - Markdown WYSIWYG
 - 实时预览
+- HTML块实时渲染
 - 代码块语法高亮
 
 ### AI 引擎

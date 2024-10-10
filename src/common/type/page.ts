@@ -4,14 +4,16 @@ import {
   zodSafeArray,
   zodSafeTimestamp,
   zodSafeBoolean,
+  zodSafeNumber,
 } from '../utils/type';
 
 export const ROOT_PAGE_ID = 'ROOT_PAGE';
+export const TRASH_PAGE_ID = 'TRASH_PAGE';
 
 export const PageCustomIdSchema = z
   .string()
-  .refine((id) => id !== ROOT_PAGE_ID, {
-    message: 'id cannot be ROOT_PAGE',
+  .refine((id) => id !== ROOT_PAGE_ID && id !== TRASH_PAGE_ID, {
+    message: 'id cannot be ROOT_PAGE or TRASH_PAGE',
   })
   .refine((id) => !id.startsWith('auth'), {
     message: 'id cannot start with "auth"',
@@ -29,6 +31,7 @@ export const PageSchema = z.object({
   isFavorite: zodSafeBoolean(), // whether this page is favorite
   createdAt: zodSafeTimestamp(), // When this page was created
   updatedAt: zodSafeTimestamp(), // When this page was last updated
+  openedAt: zodSafeNumber(), // When this page was last opened
   content: zodSafeString(), // The content of the page
 });
 export const PagesSchema = zodSafeArray(PageSchema);
@@ -38,6 +41,7 @@ export type ComputedPage = Page & {
   computed: {
     isPublic: boolean;
     parent?: string;
+    isTrash: boolean;
   };
 };
 export type Pages = z.infer<typeof PagesSchema>;

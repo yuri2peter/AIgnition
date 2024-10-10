@@ -17,7 +17,7 @@ export const QuickNotes: React.FC<{ show: boolean }> = ({ show }) => {
   return (
     <Stack p={16} gap={16} h={'100%'} display={show ? undefined : 'none'}>
       <Stack gap={0}>
-        <Text fw={'bold'}>Quick Note</Text>
+        <Text fw={'bold'}>Quick Notes</Text>
         {updatedAt > 0 && (
           <Group gap={'xs'}>
             <Text c="gray.6" size="sm">

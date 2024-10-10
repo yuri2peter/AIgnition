@@ -71,7 +71,6 @@ export default class JsonDb<T> {
       }
     };
     this.onLoad = onLoad;
-    this.handleOnLoad();
     this.loadFile();
     this.startBackupPlan(backup);
   }
@@ -94,6 +93,11 @@ export default class JsonDb<T> {
       const record = JSON.parse(content) as Record<unknown>;
       this.importRecord(record);
     } catch (error) {
+      this.importRecord({
+        data: {},
+        updatedAtString: '',
+        updatedAtTime: 0,
+      });
       console.log('[jsonDb] Error parsing db file, use default value.');
     }
     this.saveFile();

@@ -6,27 +6,27 @@ import { IBaseMark } from 'bookmark-file-parser';
 export async function dataInsert(dataParsed: IBaseMark) {
   const createPage = usePageStore.getState().actions.createPage;
   const traversal = async (mark: IBaseMark, parentId = ROOT_PAGE_ID) => {
-    const id = await createPage(
-      {
-        title: mark.name,
-        content: `# ${mark.name}\n\n`,
+    const id = await createPage({
+      item: {
+        title: '📁 ' + mark.name,
+        content: `# 📁 ${mark.name}\n\n`,
         isFolder: true,
       },
-      parentId,
-      true
-    );
+      parent: parentId,
+      noEffects: true,
+    });
     const bookmarks = mark.children.filter((t) => t.type === 'site');
     if (bookmarks.length > 0) {
-      await createPage(
-        {
-          title: 'Bookmarks',
+      await createPage({
+        item: {
+          title: '🔖 Bookmarks',
           content:
-            '# Bookmarks\n\n' +
+            '# 🔖 Bookmarks\n\n' +
             bookmarks.map((t) => `- [${t.name}](${t.href})`).join('\n'),
         },
-        id,
-        true
-      );
+        parent: id,
+        noEffects: true,
+      });
     }
     for (const subFolder of mark.children.filter((t) => t.type === 'folder')) {
       await traversal(subFolder, id);

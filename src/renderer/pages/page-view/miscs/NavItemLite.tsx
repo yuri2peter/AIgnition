@@ -27,7 +27,7 @@ const NavItemLite: React.FC<{
               marginLeft: 0,
               paddingLeft: 8,
             }}
-            className={clsx('rct-tree-item-button', {
+            className={clsx('rct-tree-item-button before:left-0', {
               'rct-tree-item-button-selected': selected,
             })}
             {...buttonProps}

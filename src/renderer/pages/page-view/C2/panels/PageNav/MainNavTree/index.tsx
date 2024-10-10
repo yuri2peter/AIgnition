@@ -6,7 +6,7 @@ import {
   TreeRef,
   UncontrolledTreeEnvironment,
 } from 'react-complex-tree';
-import { ComputedPage } from 'src/common/type/page';
+import { ComputedPage, TRASH_PAGE_ID } from 'src/common/type/page';
 import {
   selectComputedPagesDfs,
   selectNavTreeDatas,
@@ -26,7 +26,11 @@ import {
   useListenEventFocusPage,
   useListenEventPageUpdated,
 } from '../events';
-import { getAncestorsNodes, getNodeById } from 'src/common/utils/tree';
+import {
+  getAncestorsNodes,
+  getDescendantsNodes,
+  getNodeById,
+} from 'src/common/utils/tree';
 import { waitUntil } from 'src/common/utils/time';
 import CustomDataProvider from './CustomDataProvider';
 import { modals } from '@mantine/modals';
@@ -42,7 +46,8 @@ const MainNavTree: React.FC<{}> = () => {
   const refWrapperFocused = useRef(false);
   const loggedIn = useUserStore((s) => s.loggedIn);
   const pages = usePageStore(selectComputedPagesDfs);
-  const { patchPage, deletePages } = usePageStore((s) => s.actions);
+  const { patchPage, deletePages, deletePage, moveToTrash, movePagesToTrash } =
+    usePageStore((s) => s.actions);
   const currentPageId = usePageStore((s) => s.currentPageId);
   const pageNavTreeDatas = usePageStore(selectNavTreeDatas);
   const rootNavNode = usePageStore(selectRootNavNode);
@@ -123,26 +128,62 @@ const MainNavTree: React.FC<{}> = () => {
           e.preventDefault();
           refTree.current?.selectItems([currentPageId]);
         }
-        // multi delete
         if (e.key === 'Delete') {
           e.preventDefault();
           const deleteIds = (refEnv.current?.viewState[TREE_ID]
             ?.selectedItems || []) as string[];
+          if (deleteIds.includes(TRASH_PAGE_ID)) {
+            return;
+          }
+          const pages = usePageStore.getState().pages;
+          const trashPage = getNodeById(pages, TRASH_PAGE_ID)!;
+          const trashDescendantsNodes = getDescendantsNodes(pages, trashPage);
+          const hasTrashDescendant = trashDescendantsNodes.some((t) =>
+            deleteIds.includes(t.id)
+          );
           if (deleteIds.length >= 2) {
-            modals.openConfirmModal({
-              title: 'Please confirm your action',
-              children: (
-                <Text size="sm">
-                  This action will remove all the pages selected(
-                  {deleteIds.length} items) and all its subpages. Please click
-                  one of these buttons to proceed.
-                </Text>
-              ),
-              labels: { confirm: 'Confirm', cancel: 'Cancel' },
-              onConfirm: () => {
-                deletePages(deleteIds).catch(apiErrorHandler);
-              },
-            });
+            // multi delete
+            if (hasTrashDescendant) {
+              modals.openConfirmModal({
+                title: 'Please confirm your action',
+                children: (
+                  <Text size="sm">
+                    This action will remove all the pages selected (
+                    {deleteIds.length} items) and all their subpages
+                    permanently. Please click one of these buttons to proceed.
+                  </Text>
+                ),
+                labels: { confirm: 'Confirm', cancel: 'Cancel' },
+                onConfirm: () => {
+                  deletePages(deleteIds).catch(apiErrorHandler);
+                },
+              });
+            } else {
+              movePagesToTrash(deleteIds).catch(apiErrorHandler);
+            }
+          } else if (deleteIds.length === 1) {
+            // single delete
+            const pageId = deleteIds[0]!;
+            if (hasTrashDescendant) {
+              const node = getNodeById(pages, pageId)!;
+              modals.openConfirmModal({
+                title: 'Please confirm your action',
+                children: (
+                  <Text size="sm">
+                    This action will remove the page "{node.title}" and all its
+                    subpages permanently. Please click one of these buttons to
+                    proceed.
+                  </Text>
+                ),
+                labels: { confirm: 'Confirm', cancel: 'Cancel' },
+                onConfirm: () => {
+                  const pageId = deleteIds[0]!;
+                  deletePage(pageId).catch(apiErrorHandler);
+                },
+              });
+            } else {
+              moveToTrash(pageId).catch(apiErrorHandler);
+            }
           }
         }
       }
@@ -151,7 +192,7 @@ const MainNavTree: React.FC<{}> = () => {
     return () => {
       document.removeEventListener('keydown', keydownHandler);
     };
-  }, [currentPageId, deletePages]);
+  }, [currentPageId, deletePage, deletePages, moveToTrash, movePagesToTrash]);
 
   if (!rootPageId) {
     return null;

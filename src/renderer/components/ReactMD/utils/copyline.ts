@@ -37,7 +37,7 @@ export function tryPasteCopyline(
         start: p1,
         end: p1,
       });
-      textApi.replaceSelection(`${line}\r\n`);
+      textApi.replaceSelection(`${line}\n`);
       e.preventDefault();
       return true;
     }

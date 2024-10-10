@@ -7,6 +7,7 @@ import {
   PageSchema,
   PagesSchema,
   ROOT_PAGE_ID,
+  TRASH_PAGE_ID,
 } from 'src/common/type/page';
 import { createSelector } from 'reselect';
 import { decode } from 'js-base64';
@@ -63,11 +64,15 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     });
     emitEventPageUpdated(pages.map((t) => t.id));
   };
-  const createPage = async (
-    item: Partial<Page> = {},
-    parent: string,
-    noEffects = false
-  ) => {
+  const createPage = async ({
+    item = {},
+    parent = ROOT_PAGE_ID,
+    noEffects = false,
+  }: {
+    item?: Partial<Page>;
+    parent?: string;
+    noEffects?: boolean;
+  }) => {
     const { data } = await api().post('/api/page/create-item', {
       item,
       parent,
@@ -115,6 +120,11 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     await pullPages();
     emitEventReloadTree();
   };
+  const clearTrash = async () => {
+    const pages = selectComputedPagesDfs(get());
+    const trashPage = getNodeById(pages, TRASH_PAGE_ID)!;
+    await deletePages(trashPage.children);
+  };
   const setCurrentPageId = (currentPageId: string) => {
     set({ currentPageId });
   };
@@ -154,6 +164,40 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     set({ pagesLoaded });
   };
 
+  const moveToTrash = async (pageId: string) => {
+    const pages = selectComputedPagesDfs(get());
+    const currentPage = getNodeById(pages, pageId)!;
+    const parentId = currentPage.computed.parent!;
+    const parentPage = getNodeById(pages, parentId)!;
+    await patchPage({
+      id: pageId,
+      isPublicFolder: false,
+      isFavorite: false,
+    });
+    await patchPage({
+      id: parentId,
+      children: parentPage.children.filter((t) => t !== pageId),
+    });
+    const trashPage = getNodeById(pages, TRASH_PAGE_ID)!;
+    await patchPage({
+      id: TRASH_PAGE_ID,
+      children: [...trashPage.children, pageId],
+    });
+  };
+
+  const movePagesToTrash = async (pageIds: string[]) => {
+    await api().post('/api/page/move-items-to-trash', { ids: pageIds });
+    await pullPages();
+    emitEventReloadTree();
+  };
+
+  const updateOpenedAtForCurrentPage = async () => {
+    await patchPage({
+      id: get().currentPageId,
+      openedAt: Date.now(),
+    });
+  };
+
   return {
     actions: {
       pullPages,
@@ -168,6 +212,10 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
       setPagesLoaded,
       pullGuestPages,
       clearPages,
+      clearTrash,
+      moveToTrash,
+      movePagesToTrash,
+      updateOpenedAtForCurrentPage,
     },
   };
 });
@@ -190,6 +238,7 @@ export const selectComputedPagesDfs = createSelector(
           isPublic: [node, ...ancestorsNodes].some(
             (t) => t.isFolder && t.isPublicFolder
           ),
+          isTrash: ancestorsNodes.some((t) => t.id === TRASH_PAGE_ID),
         },
       };
       orderedPages.push(computedPage);
@@ -208,7 +257,7 @@ export const selectNavTreeDatas = createSelector(
         index: page.id,
         children: page.children,
         isFolder: page.isFolder,
-        canMove: true,
+        canMove: ![ROOT_PAGE_ID, TRASH_PAGE_ID].includes(page.id),
         canRename: false,
         data: page,
       };
@@ -289,5 +338,29 @@ export const selectCurrentTreeNodeRelated = createSelector(
     } else {
       return null;
     }
+  }
+);
+
+export const selectRecentlyOpenedPages = createSelector(
+  selectComputedPagesDfs,
+  (pages) => {
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const threeDays = 3 * oneDay;
+
+    const sortedPages = [...pages]
+      .filter((page) => !page.computed.isTrash)
+      .sort((a, b) => b.openedAt - a.openedAt);
+
+    const lastDay = sortedPages.filter((page) => now - page.openedAt <= oneDay);
+    const lastThreeDays = sortedPages.filter((page) => {
+      const timeDiff = now - page.openedAt;
+      return timeDiff > oneDay && timeDiff <= threeDays;
+    });
+
+    return {
+      lastDay,
+      lastThreeDays,
+    };
   }
 );

@@ -23,15 +23,34 @@ const EditorMode: React.FC<{}> = () => {
   const currentPageId = usePageStore((s) => s.currentPageId);
   const currentPage = usePageStore(selectCurrentPage);
   const [page, setPage] = useState(currentPage);
-  const { patchPage } = usePageStore((s) => s.actions);
+  const { patchPage, updateOpenedAtForCurrentPage } = usePageStore(
+    (s) => s.actions
+  );
   const aiEnabled = useNonSensitiveSettingsStore(selectAiEnabled);
   const id = page?.id;
   const loading = currentPageId !== id;
   useEffect(() => {
     if (currentPage) {
       setPage(currentPage);
+      // If the page is a new page, auto focus and select the title
+      (() => {
+        if (currentPage.content.match(/^#\s.+Untitled\s+$/)) {
+          requestAnimationFrame(() => {
+            const el: HTMLTextAreaElement | null = document.querySelector(
+              'textarea.w-md-editor-text-input'
+            );
+            if (el) {
+              setTimeout(() => {
+                el.focus();
+                el.setSelectionRange(5, 13);
+              }, 300);
+            }
+          });
+        }
+      })();
     }
-  }, [currentPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage?.id]);
   useEffect(() => {
     if (!loading) {
       const anchor = document.querySelector('.w-md-editor-preview>*>*>*');
@@ -41,6 +60,12 @@ const EditorMode: React.FC<{}> = () => {
       }
     }
   }, [loading]);
+  useEffect(() => {
+    const itv = setInterval(() => {
+      updateOpenedAtForCurrentPage().catch(() => {});
+    }, 1000 * 5);
+    return () => clearInterval(itv);
+  }, [id, updateOpenedAtForCurrentPage]);
   return (
     <>
       <UploadingOverlay />

@@ -28,7 +28,7 @@ const ErrorPage: React.FC<{}> = () => {
   }, [setShowLeft, loggedIn, setActivedSectionId]);
   return (
     <Box className="mx-auto p-4 pt-12" style={{ maxWidth: '650px' }}>
-      <MarkdownRender text={errorMesg} />
+      <MarkdownRender text={errorMesg} defaultShowPreviewInHtmlCodeBlock />
     </Box>
   );
 };

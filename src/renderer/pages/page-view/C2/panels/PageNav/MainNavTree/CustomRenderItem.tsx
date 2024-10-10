@@ -5,9 +5,10 @@ import {
   TreeItemRenderContext,
 } from 'react-complex-tree';
 import { Link } from 'react-router-dom';
+import { TRASH_PAGE_ID } from 'src/common/type/page';
 import { getPageRoute } from 'src/renderer/helpers/miscs';
 
-const renderDepthOffset = 10;
+const renderDepthOffset = 16;
 const cx = (...classNames: Array<string | undefined | false>) =>
   classNames.filter((cn) => !!cn).join(' ');
 
@@ -33,6 +34,14 @@ const CustomRenderItem = ({
 }: Props) => {
   const InteractiveComponent = context.isRenaming ? 'div' : 'button';
   const type = context.isRenaming ? undefined : 'button';
+  const trashBinCountText = (() => {
+    if (item.data?.id !== TRASH_PAGE_ID) {
+      return '';
+    }
+    const count = item.children?.length ?? 0;
+    const text = count === 0 ? ' (empty)' : ` (${count})`;
+    return <span className="text-xs text-gray-500">{text}</span>;
+  })();
   return (
     <li
       {...(context.itemContainerWithChildrenProps as any)}
@@ -85,6 +94,7 @@ const CustomRenderItem = ({
             {/* <span>{item.isFolder ? '📁' : '📄'}</span> */}
             <p className="rct-tree-item-title" title={item.data?.title}>
               {title}
+              {trashBinCountText}
             </p>
             {loggedIn && item.data?.isPublicFolder && (
               <span title="Public folder">🌐</span>

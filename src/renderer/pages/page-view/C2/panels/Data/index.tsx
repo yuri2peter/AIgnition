@@ -95,7 +95,7 @@ const SectionData: React.FC<{}> = () => {
               .then(() => {
                 notifications.show({
                   title: 'Action performed',
-                  message: 'Server link icon cache cleared successfully',
+                  message: 'Link icon cache cleared successfully',
                   color: 'green',
                 });
               })

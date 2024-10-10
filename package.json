@@ -27,6 +27,7 @@
     "prod:node": "npm run build && node dist/server/main.js",
     "package:regular": "npm run build && ts-node package/regular/package.ts",
     "package:docker": "npm run build && ts-node package/docker/package.ts",
+    "package:docker-preview": "npm run build && cross-env TAG=preview ts-node package/docker/package.ts",
     "postinstall": "patch-package",
     "free-port1": "npx kill-port 8000",
     "free-port2": "npx kill-port 3000",
