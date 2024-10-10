@@ -63,7 +63,6 @@ const EditorMode: React.FC<{}> = () => {
   useEffect(() => {
     const itv = setInterval(() => {
       updateOpenedAtForCurrentPage().catch(() => {});
-      console.log('updateOpenedAtForCurrentPage', id);
     }, 1000 * 5);
     return () => clearInterval(itv);
   }, [id, updateOpenedAtForCurrentPage]);

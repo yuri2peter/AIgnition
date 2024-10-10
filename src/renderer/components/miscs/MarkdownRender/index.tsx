@@ -111,8 +111,8 @@ const MarkdownRender: React.FC<
         'prose-a:no-underline',
         'prose-a:break-all',
         'hover:prose-a:underline',
-        'prose-blockquote:text-green-600',
-        'prose-blockquote:border-green-600'
+        'prose-blockquote:text-slate-600',
+        'prose-blockquote:border-slate-300'
       )}
     />
   );

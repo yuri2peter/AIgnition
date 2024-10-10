@@ -1,4 +1,7 @@
-import db, { getDefaultRootPage } from 'src/server/data/db';
+import db, {
+  getDefaultRootPage,
+  getDefaultTrashPage,
+} from 'src/server/data/db';
 import { Controller } from '../types/controller';
 import {
   Page,
@@ -202,7 +205,10 @@ const page: Controller = (router) => {
   });
 
   router.post('/api/page/reset-data', async (ctx) => {
-    db().get().pages = [getDefaultRootPage()];
+    const rootPage = getDefaultRootPage();
+    const trashPage = getDefaultTrashPage();
+    rootPage.children.push(trashPage.id);
+    db().get().pages = [rootPage, trashPage];
     db().save();
     ctx.body = { ok: 1 };
   });

@@ -25,6 +25,9 @@ const dbInstance = new JsonDb({
     set(DataSchema.parse(get()));
     const data = get();
 
+    // reset pages (test only)
+    // data.pages = [];
+
     // root page must exist
     if (!data.pages.find((t) => t.id === ROOT_PAGE_ID)) {
       data.pages.push(getDefaultRootPage());
@@ -40,13 +43,16 @@ const dbInstance = new JsonDb({
     }
 
     data.pages.forEach((page) => {
+      // No \r or nbsp
+      page.content = page.content.replace(/\r/g, '').replace(/\u00A0/g, ' ');
       // experimental feature: Add 📁 or 📄 for existing page.
       // e.g. # Hello -> # 📄 Hello
-      if (!page.title.match(/^..\s/)) {
-        const icon = page.isFolder ? '📁' : '📄';
-        page.title = `${icon} ${page.title}`;
-        page.content = page.content.replace(/^#\s/, `# ${icon} `);
-      }
+
+      // if (!page.title.match(/^[^\s]{2}\s/)) {
+      //   const icon = page.isFolder ? '📁' : '📄';
+      //   page.title = `${icon} ${page.title}`;
+      //   page.content = page.content.replace(/^#\s/, `# ${icon} `);
+      // }
     });
   },
 });
