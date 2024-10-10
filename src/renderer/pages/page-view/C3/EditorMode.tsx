@@ -32,14 +32,17 @@ const EditorMode: React.FC<{}> = () => {
       setPage(currentPage);
       // If the page is a new page, auto focus and select the title
       (() => {
-        if (currentPage.content.match(/^#\s.+Untitled/)) {
+        if (currentPage.content.match(/^#\s.+Untitled\s+$/)) {
+          console.log(currentPage);
           requestAnimationFrame(() => {
             const el: HTMLTextAreaElement | null = document.querySelector(
               'textarea.w-md-editor-text-input'
             );
             if (el) {
-              el.focus();
-              el.setSelectionRange(5, 13);
+              setTimeout(() => {
+                el.focus();
+                el.setSelectionRange(5, 13);
+              }, 300);
             }
           });
         }
