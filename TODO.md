@@ -1,2 +1,2 @@
 - search keywords highlight
-- Recently opened pages
+- bug coused by \r\n

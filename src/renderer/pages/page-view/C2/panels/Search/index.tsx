@@ -14,7 +14,7 @@ const Search: React.FC<{}> = () => {
   const searchKeywordsDebounced = useDebouncedCallback(searchKeywords, 500);
   return (
     <Stack p={16} gap={24} h={'100%'}>
-      <Text fw={'bold'}>Search pages</Text>
+      <Text fw={'bold'}>Search Pages</Text>
       <TextInput
         ref={refInput}
         spellCheck={false}

@@ -15,7 +15,10 @@ import {
   IconRecycle,
 } from '@tabler/icons-react';
 import React, { useCallback } from 'react';
-import { usePageStore } from 'src/renderer/store/usePageStore';
+import {
+  selectComputedPagesDfs,
+  usePageStore,
+} from 'src/renderer/store/usePageStore';
 import { ShowContextMenuFunction, useContextMenu } from 'mantine-contextmenu';
 import { getPageRoute } from 'src/renderer/helpers/miscs';
 import { apiErrorHandler } from 'src/renderer/helpers/api';
@@ -23,7 +26,7 @@ import { notifications } from '@mantine/notifications';
 import { modals, openContextModal } from '@mantine/modals';
 import { useUserStore } from 'src/renderer/store/useUserStore';
 import { ROOT_PAGE_ID, TRASH_PAGE_ID } from 'src/common/type/page';
-import { getAncestorsNodes, getNodeById } from 'src/common/utils/tree';
+import { getNodeById } from 'src/common/utils/tree';
 
 export function openPageActionsMenu(params: {
   itemId: string;
@@ -32,7 +35,6 @@ export function openPageActionsMenu(params: {
 }) {
   const { showContextMenu, event } = params;
   const {
-    pages,
     actions: {
       createPage,
       deletePage,
@@ -42,9 +44,9 @@ export function openPageActionsMenu(params: {
       moveToTrash,
     },
   } = usePageStore.getState();
+  const pages = selectComputedPagesDfs(usePageStore.getState());
   const node = getNodeById(pages, params.itemId)!;
-  const ancestorsNodes = getAncestorsNodes(pages, node);
-  const isInsideTrash = ancestorsNodes.some((t) => t.id === TRASH_PAGE_ID);
+  const isInsideTrash = node.computed.isTrash;
 
   const menu = (() => {
     const ms = {

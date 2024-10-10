@@ -1,5 +1,6 @@
 - v1.6.0
   - [FEATURE] Auto focus and select title when create a new page.
+  - [FEATURE] Recently opened pages.
   - [FEATURE] Packaging the APP into a Docker image (preview version).
   - [FEATURE] Trash bin.
   - [FEATURE] Remove Web Widgets feature(use html code block instead).

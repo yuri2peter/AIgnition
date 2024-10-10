@@ -91,6 +91,7 @@ const page: Controller = (router) => {
       id,
       createdAt: Date.now(),
       updatedAt: Date.now(),
+      openedAt: Date.now(),
     };
     db().get().pages.push(itemFixed);
     parentPage.children.push(id);

@@ -11,6 +11,7 @@ import UserPanel from '../C2/panels/User';
 import { Favorites } from '../C2/panels/Favorites';
 import { QuickNotes } from '../C2/panels/QuickNotes';
 import Logo from '../miscs/Logo';
+import Recently from './panels/Recently';
 
 const C2: React.FC<{}> = () => {
   const loggedIn = useUserStore((s) => s.loggedIn);
@@ -21,12 +22,17 @@ const C2: React.FC<{}> = () => {
       <Box style={{ flexGrow: 1, overflow: 'auto' }}>
         <PageNav show={sid === 'pages'} />
         {sid === 'search' && <Search />}
-        {loggedIn && <Favorites show={sid === 'favorites'} />}
-        {sid === 'aichat' && <Aichat />}
-        {sid === 'quickNotes' && <QuickNotes show={true} />}
-        {sid === 'settings' && <Settings />}
-        {sid === 'data' && <SectionData />}
-        {sid === 'user' && <UserPanel />}
+        {loggedIn ? (
+          <>
+            {sid === 'recently' && <Recently />}
+            {sid === 'favorites' && <Favorites />}
+            {sid === 'aichat' && <Aichat />}
+            {sid === 'quickNotes' && <QuickNotes show={true} />}
+            {sid === 'settings' && <Settings />}
+            {sid === 'data' && <SectionData />}
+            {sid === 'user' && <UserPanel />}
+          </>
+        ) : null}
       </Box>
     </Stack>
   );

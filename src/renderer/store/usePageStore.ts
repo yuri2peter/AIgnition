@@ -191,6 +191,13 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
     emitEventReloadTree();
   };
 
+  const updateOpenedAtForCurrentPage = async () => {
+    await patchPage({
+      id: get().currentPageId,
+      openedAt: Date.now(),
+    });
+  };
+
   return {
     actions: {
       pullPages,
@@ -208,6 +215,7 @@ export const usePageStore = createZustandStore(defaultStore, (set, get) => {
       clearTrash,
       moveToTrash,
       movePagesToTrash,
+      updateOpenedAtForCurrentPage,
     },
   };
 });
@@ -230,6 +238,7 @@ export const selectComputedPagesDfs = createSelector(
           isPublic: [node, ...ancestorsNodes].some(
             (t) => t.isFolder && t.isPublicFolder
           ),
+          isTrash: ancestorsNodes.some((t) => t.id === TRASH_PAGE_ID),
         },
       };
       orderedPages.push(computedPage);
@@ -329,5 +338,29 @@ export const selectCurrentTreeNodeRelated = createSelector(
     } else {
       return null;
     }
+  }
+);
+
+export const selectRecentlyOpenedPages = createSelector(
+  selectComputedPagesDfs,
+  (pages) => {
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const threeDays = 3 * oneDay;
+
+    const sortedPages = [...pages]
+      .filter((page) => !page.computed.isTrash)
+      .sort((a, b) => b.openedAt - a.openedAt);
+
+    const lastDay = sortedPages.filter((page) => now - page.openedAt <= oneDay);
+    const lastThreeDays = sortedPages.filter((page) => {
+      const timeDiff = now - page.openedAt;
+      return timeDiff > oneDay && timeDiff <= threeDays;
+    });
+
+    return {
+      lastDay,
+      lastThreeDays,
+    };
   }
 );

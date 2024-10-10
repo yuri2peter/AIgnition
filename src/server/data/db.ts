@@ -39,9 +39,9 @@ const dbInstance = new JsonDb({
         .children.unshift(TRASH_PAGE_ID);
     }
 
-    // experimental feature: Add 📁 or 📄 for existing page.
-    // e.g. # Hello -> # 📄 Hello
     data.pages.forEach((page) => {
+      // experimental feature: Add 📁 or 📄 for existing page.
+      // e.g. # Hello -> # 📄 Hello
       if (!page.title.match(/^..\s/)) {
         const icon = page.isFolder ? '📁' : '📄';
         page.title = `${icon} ${page.title}`;
