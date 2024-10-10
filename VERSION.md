@@ -4,7 +4,6 @@
   - [FEATURE] Packaging the APP into a Docker image (preview version).
   - [FEATURE] Trash bin.
   - [FEATURE] Remove Web Widgets feature(use html code block instead).
-  - [REFINE] Add 📁 or 📄 for existing page.
   - [REFINE] Refine some details.
 - v1.5.0
   - [FEATURE] HTML code block preview.

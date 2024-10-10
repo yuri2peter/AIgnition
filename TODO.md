@@ -1,2 +1,1 @@
 - search keywords highlight
-- bug coused by \r\n
