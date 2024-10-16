@@ -53,24 +53,14 @@ function searchKeywordsFromPages(keywords: string, pages: Pages) {
   }
   const results: {
     page: Page;
-    linesMatched: string[];
   }[] = [];
   pages.forEach((page) => {
     const { content } = page;
-    if (!words.every((w) => content.includes(w))) {
+    const contentLower = content.toLowerCase();
+    if (!words.every((w) => contentLower.includes(w))) {
       return;
     }
-    const lines = content
-      .toLowerCase()
-      .split(/\n/)
-      .map((t) => t.trim())
-      .filter((t) => t);
-    const linesMatched = lines.filter((t) => {
-      return words.some((w) => t.includes(w));
-    });
-    if (linesMatched.length > 0) {
-      results.push({ page, linesMatched });
-    }
+    results.push({ page });
   });
 
   return results;

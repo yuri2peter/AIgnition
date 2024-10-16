@@ -38,7 +38,6 @@ const CustomPre: React.FC<{
   useEffect(() => {
     const pre = refRoot.current?.querySelector('pre');
     if (pre) {
-      console.log(pre);
       setContent(pre.textContent || '');
     }
   }, [children]);

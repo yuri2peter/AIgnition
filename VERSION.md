@@ -1,3 +1,6 @@
+- v1.6.1
+  - [FEATURE] Create PRAR categories automatically when initialize database.
+  - [REFINE] Refine some details.
 - v1.6.0
   - [FEATURE] Auto focus and select title when create a new page.
   - [FEATURE] Recently opened pages.

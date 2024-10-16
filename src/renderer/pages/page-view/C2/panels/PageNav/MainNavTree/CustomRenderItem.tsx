@@ -1,3 +1,4 @@
+import { IconPointFilled } from '@tabler/icons-react';
 import React from 'react';
 import {
   TreeInformation,
@@ -76,7 +77,13 @@ const CustomRenderItem = ({
               'rct-tree-item-title-container-search-match'
           )}
         >
-          {arrow}
+          {item.isFolder ? (
+            arrow
+          ) : (
+            <div className="rct-tree-item-arrow" aria-hidden="true">
+              <IconPointFilled size={16} color="var(--mantine-color-gray-4)" />
+            </div>
+          )}
           <InteractiveComponent
             type={type}
             {...(context.interactiveElementProps as any)}

@@ -1,7 +1,7 @@
 import path from 'path';
 import JsonDb from 'src/common/libs/jsonDb';
 import { runtimeDataPath } from 'src/common/paths.app';
-import { DataSchema, defaultValue } from 'src/common/type/data';
+import { Data, DataSchema, defaultValue } from 'src/common/type/data';
 import {
   Page,
   PageSchema,
@@ -10,6 +10,7 @@ import {
 } from 'src/common/type/page';
 import { consoleLog } from 'src/common/utils/dev';
 import { recreateUserGuide } from '../web/helpers/userGuide';
+import { shortId } from 'src/common/utils/string';
 
 const dbInstance = new JsonDb({
   encode: true,
@@ -25,13 +26,14 @@ const dbInstance = new JsonDb({
     set(DataSchema.parse(get()));
     const data = get();
 
-    // reset pages (test only)
-    // data.pages = [];
+    // TODO: test only
+    // createPRAR(data);
 
-    // root page must exist
+    // Initialize pages
     if (!data.pages.find((t) => t.id === ROOT_PAGE_ID)) {
       data.pages.push(getDefaultRootPage());
       recreateUserGuide(data);
+      createPRAR(data);
     }
 
     // trash page must exist
@@ -119,4 +121,43 @@ This is the trash bin where deleted pages are temporarily stored. Pages in the t
 `,
   };
   return PageSchema.parse(defaultTrashPageData);
+}
+
+// https://fortelabs.com/blog/para/
+export function createPRAR(data: Data) {
+  const { pages } = data;
+  const prar = [
+    {
+      id: shortId(),
+      title: '📋 Project',
+      isFolder: true,
+      content:
+        "# 📋 Project\n\nShort-term efforts in your work or life that you're working one now.",
+    },
+    {
+      id: shortId(),
+      title: '🔬 Area',
+      isFolder: true,
+      content:
+        '# 🔬 Area\n\nLong-term responsibilities you want to manage over time.',
+    },
+    {
+      id: shortId(),
+      title: '🍭 Resources',
+      isFolder: true,
+      content:
+        '# 🍭 Resources\n\nTopics or interests that may be useful in the future.',
+    },
+    {
+      id: shortId(),
+      title: '🗃️ Archive',
+      isFolder: true,
+      content:
+        '# 🗃️ Archive\n\nInactive items from the orther three categories.',
+    },
+  ];
+  pages.push(...prar.map((t) => PageSchema.parse(t)));
+  pages
+    .find((t) => t.id === ROOT_PAGE_ID)!
+    .children.push(...prar.map((t) => t.id));
 }

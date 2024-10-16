@@ -1,12 +1,8 @@
 {
-  "version": "1.6.0",
-  "releaseDate": "2024-10-10",
+  "version": "1.6.1",
+  "releaseDate": "2024-10-16",
   "updateDetails": [
-    "[FEATURE] Auto focus and select title when create a new page.",
-    "[FEATURE] Recently opened pages.",
-    "[FEATURE] Packaging the APP into a Docker image (preview version).",
-    "[FEATURE] Trash bin.",
-    "[FEATURE] Remove Web Widgets feature(use html code block instead).",
+    "[FEATURE] Create PRAR categories automatically when initialize database.",
     "[REFINE] Refine some details."
   ]
 }
