@@ -1,3 +1,6 @@
+- v1.7.0
+  - [FIX] Permission error accessing the downloaded archive.
+  - [FEATURE] Better search results.
 - v1.6.1
   - [FEATURE] Create PRAR categories automatically when initialize database.
   - [REFINE] Refine some details.

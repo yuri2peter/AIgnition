@@ -1,5 +1,6 @@
+import Fuse from 'fuse.js';
 import { createZustandStore } from 'src/common/libs/createZustand';
-import { Page, Pages } from 'src/common/type/page';
+import { Pages } from 'src/common/type/page';
 import { usePageStore } from './usePageStore';
 
 interface Store {
@@ -28,7 +29,7 @@ export const useSearchStore = createZustandStore(defaultStore, (set, get) => {
     const { inputValue } = get();
     const { pages } = usePageStore.getState();
     const matchIds = searchKeywordsFromPages(inputValue, pages).map(
-      (t) => t.page.id
+      (t) => t.item.id
     );
     set({
       matchIds,
@@ -40,28 +41,21 @@ export const useSearchStore = createZustandStore(defaultStore, (set, get) => {
 });
 
 function searchKeywordsFromPages(keywords: string, pages: Pages) {
-  if (keywords.length < 2) {
-    return [];
-  }
-  const words = keywords
-    .toLowerCase()
-    .split(' ')
-    .map((t) => t.trim())
-    .filter((t) => t);
-  if (!words.length) {
-    return [];
-  }
-  const results: {
-    page: Page;
-  }[] = [];
-  pages.forEach((page) => {
-    const { content } = page;
-    const contentLower = content.toLowerCase();
-    if (!words.every((w) => contentLower.includes(w))) {
-      return;
-    }
-    results.push({ page });
+  const fuse = new Fuse(pages, {
+    includeScore: true,
+    ignoreLocation: true,
+    useExtendedSearch: true,
+    keys: [
+      {
+        name: 'title',
+        weight: 1.2,
+      },
+      {
+        name: 'content',
+        weight: 1.0,
+      },
+    ],
   });
-
+  const results = fuse.search(keywords);
   return results;
 }

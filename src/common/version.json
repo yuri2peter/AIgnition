@@ -1,8 +1,9 @@
 {
-  "version": "1.6.1",
-  "releaseDate": "2024-10-16",
+  "version": "1.7.0",
+  "releaseDate": "2024-10-29",
   "updateDetails": [
-    "[FEATURE] Create PRAR categories automatically when initialize database.",
+    "[FIX] Permission error accessing the downloaded archive.",
+    "[FEATURE] Better search results.",
     "[REFINE] Refine some details."
   ]
 }

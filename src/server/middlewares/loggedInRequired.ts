@@ -7,6 +7,7 @@ const checkList = ['/api/'];
 const excludeList: string[] = [
   '/api/auth/login-password',
   '/api/auth/request-temp-password',
+  '/api/miscs/download-archive',
   '/api/miscs/parse-link-icon',
   '/api/page/get-guest-items',
   '/api/settings/get-non-sensitive',

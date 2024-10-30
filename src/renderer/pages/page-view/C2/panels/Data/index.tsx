@@ -10,6 +10,7 @@ import { openImportFromBrowserFavoritesModalModal } from './ImportFromBrowserFav
 import { z } from 'zod';
 import { openImportFromArchiveModal } from './ImportFromArchive';
 import { usePageStore } from 'src/renderer/store/usePageStore';
+import { IconDownload } from '@tabler/icons-react';
 
 const buttonProps = {
   variant: 'light',
@@ -177,14 +178,41 @@ function handleDeleteUnusedUploads() {
 
 async function handleSaveArchive() {
   try {
-    await api().post('/api/miscs/export-archive');
-    const downloadLink = document.createElement('a');
-    downloadLink.href = '/api/miscs/download-archive';
-    downloadLink.click();
     notifications.show({
-      title: 'Action performed',
-      message: 'Archive download successfully',
+      title: 'Preparing archive',
+      message:
+        'Please wait while we prepare your archive. It may takes a while.',
       color: 'green',
+    });
+    const {
+      data: { downloadToken },
+    } = await api().post('/api/miscs/export-archive');
+    modals.open({
+      title: 'Archive is ready',
+      children: (
+        <Stack gap={24}>
+          <Text>
+            Your archive is ready to download. Please click the button below to
+            download it.
+          </Text>
+          <Button
+            leftSection={<IconDownload size={16} />}
+            component="a"
+            href={`/api/miscs/download-archive?downloadToken=${downloadToken}`}
+            target="_blank"
+            onClick={() => {
+              modals.closeAll();
+              notifications.show({
+                title: 'Action performed',
+                message: 'Archive now started downloading',
+                color: 'green',
+              });
+            }}
+          >
+            Download archive
+          </Button>
+        </Stack>
+      ),
     });
   } catch (error) {
     apiErrorHandler(error);

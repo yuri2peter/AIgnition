@@ -24,6 +24,7 @@ import db from 'src/server/data/db';
 import { verifyToken } from '../helpers/auth';
 import dayjs from 'dayjs';
 import { recreateUserGuide } from '../helpers/userGuide';
+import { shortId } from 'src/common/utils/string';
 
 const miscs: Controller = (router) => {
   router.all('/api/miscs/get-server-ip-info', async (ctx) => {
@@ -87,6 +88,7 @@ const miscs: Controller = (router) => {
     ctx.body = deleteUnusedUploads();
   });
 
+  const memCacheDownloadToken = new MemCache();
   let usingTempDir = false;
   router.post('/api/miscs/export-archive', async (ctx) => {
     await waitUntil(() => !usingTempDir, 1000);
@@ -105,7 +107,9 @@ const miscs: Controller = (router) => {
         path.resolve(runtimeTempArchiveDirPath, 'uploads')
       );
       await zip(runtimeTempArchiveDirPath, runtimeTempArchiveZipPath);
-      ctx.body = { ok: 1 };
+      const downloadToken = shortId();
+      memCacheDownloadToken.set(downloadToken, true, 60);
+      ctx.body = { downloadToken };
     } catch (error) {
       usingTempDir = false;
       ctx.throw(500, 'Internal Server Error');
@@ -115,8 +119,18 @@ const miscs: Controller = (router) => {
   });
 
   router.get('/api/miscs/download-archive', async (ctx) => {
+    // get downloadToken from params
+    const downloadToken = ctx.query.downloadToken;
+    if (
+      !downloadToken ||
+      !memCacheDownloadToken.get(downloadToken.toString())
+    ) {
+      ctx.throw(400, 'Download token is required');
+      return;
+    }
     ctx.attachment(`aignition-archive-${dayjs().format('YYYY-MM-DD')}.zip`);
     ctx.type = 'application/zip';
+    ctx.length = fs.statSync(runtimeTempArchiveZipPath).size;
     ctx.body = fs.createReadStream(runtimeTempArchiveZipPath);
   });
 
