@@ -41,6 +41,7 @@ export const ImportFromBrowserFavoritesModal = ({
         )
       ) : (
         <FileDropzone
+          maxSize={1024 ** 3}
           maxFiles={1}
           onDrop={async (files) => {
             const firstFile = files[0];

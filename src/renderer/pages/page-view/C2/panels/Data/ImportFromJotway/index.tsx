@@ -28,6 +28,7 @@ export const ImportFromJotwayModal = ({
         )
       ) : (
         <FileDropzone
+          maxSize={1024 ** 3}
           maxFiles={1}
           onDrop={(files) => {
             const firstFile = files[0];

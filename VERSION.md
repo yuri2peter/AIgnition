@@ -1,3 +1,5 @@
+- v1.7.1
+  - [FIX] Upload error when file size is too large.
 - v1.7.0
   - [FIX] Permission error accessing the downloaded archive.
   - [FEATURE] Better search results.

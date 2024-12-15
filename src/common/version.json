@@ -1,9 +1,7 @@
 {
-  "version": "1.7.0",
-  "releaseDate": "2024-10-29",
+  "version": "1.7.1",
+  "releaseDate": "2024-12-14",
   "updateDetails": [
-    "[FIX] Permission error accessing the downloaded archive.",
-    "[FEATURE] Better search results.",
-    "[REFINE] Refine some details."
+    "[FIX] Upload error when file size is too large"
   ]
 }

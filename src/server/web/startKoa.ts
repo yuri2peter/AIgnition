@@ -58,15 +58,17 @@ function useUpload(app: Koa) {
       jsonLimit: '100mb',
       multipart: true,
       onError(err, ctx) {
+        console.error(err);
         ctx.throw(422, 'body parse error');
       },
       formidable: MAX_UPLOAD_FILE_SIZE
         ? {
-            uploadDir: runtimeUploadsPath,
-            maxTotalFileSize: MAX_UPLOAD_FILE_SIZE,
-            multiples: true,
-            // "onFileBegin" somehow broken in this case
-          }
+          uploadDir: runtimeUploadsPath,
+          maxFileSize: MAX_UPLOAD_FILE_SIZE,
+          maxTotalFileSize: MAX_UPLOAD_FILE_SIZE,
+          multiples: true,
+          // "onFileBegin" somehow broken in this case
+        }
         : undefined,
     })
   );
