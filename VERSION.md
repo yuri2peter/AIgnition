@@ -1,3 +1,5 @@
+- v1.7.2
+  - [FIX] Lose user panel when login.
 - v1.7.1
   - [FIX] Upload error when file size is too large.
 - v1.7.0

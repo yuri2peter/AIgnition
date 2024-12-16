@@ -30,9 +30,9 @@ const C2: React.FC<{}> = () => {
             {sid === 'quickNotes' && <QuickNotes show={true} />}
             {sid === 'settings' && <Settings />}
             {sid === 'data' && <SectionData />}
-            {sid === 'user' && <UserPanel />}
           </>
         ) : null}
+        {sid === 'user' && <UserPanel />}
       </Box>
     </Stack>
   );

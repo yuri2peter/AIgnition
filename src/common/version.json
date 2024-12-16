@@ -1,7 +1,7 @@
 {
-  "version": "1.7.1",
+  "version": "1.7.2",
   "releaseDate": "2024-12-14",
   "updateDetails": [
-    "[FIX] Upload error when file size is too large"
+    "[FIX] Lose user panel when login"
   ]
 }
